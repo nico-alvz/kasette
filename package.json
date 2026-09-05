@@ -1,6 +1,6 @@
 {
   "name": "sonora",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": false,
   "description": "A 100% offline, client-side music player PWA — import local audio files, play in the background, no accounts, no servers.",
   "license": "BSD-3-Clause",

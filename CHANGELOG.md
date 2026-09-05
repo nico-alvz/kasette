@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.1] - 2026-09-05
+
+### Changed
+
+- Cassette icon now matches the classic compact-cassette look: cream label,
+  color stripe band, spoked reels, and bottom mechanism cutouts.
+- Tightened the spacing between the search bar and its helper text.
+- Plainer README copy.
+
 ## [1.1.0] - 2026-09-05
 
 ### Added
