@@ -2,34 +2,70 @@
   <!-- Retro compact-cassette tape, flat/geometric, Material-You adaptive-icon
        style. Shapes sit inside the 176..848 safe box (inner 66% of 1024) so
        they survive an adaptive icon's circle/squircle mask. Flat fills only
-       (no gradients): the target rasterizer here has no gradient support. -->
+       (no gradients, no strokes): the target rasterizer here supports
+       neither reliably. -->
 
-  <!-- cassette shell -->
-  <rect x="200" y="270" width="624" height="460" rx="44" fill="#15151f"/>
+  <!-- shell -->
+  <rect x="200" y="260" width="624" height="480" rx="44" fill="#18181f"/>
 
-  <!-- tape window slot between the reels -->
-  <rect x="300" y="372" width="424" height="34" rx="17" fill="#0a0a12"/>
+  <!-- bottom mechanism trapezoid -->
+  <polygon points="350,690 674,690 744,760 280,760" fill="#2c2c34"/>
+  <circle cx="380" cy="725" r="20" fill="#0a0a0a"/>
+  <rect x="460" y="705" width="40" height="40" rx="8" fill="#0a0a0a"/>
+  <circle cx="512" cy="725" r="17" fill="#585d66"/>
+  <circle cx="512" cy="725" r="6" fill="#0a0a0a"/>
+  <rect x="524" y="705" width="40" height="40" rx="8" fill="#0a0a0a"/>
+  <circle cx="644" cy="725" r="20" fill="#0a0a0a"/>
 
-  <!-- reel windows (ring drawn as two flat fills, not a stroke — the target
-       rasterizer here doesn't render fill:none + stroke reliably) -->
-  <circle cx="360" cy="389" r="96" fill="#ff5500"/>
-  <circle cx="360" cy="389" r="86" fill="#0a0a12"/>
-  <circle cx="664" cy="389" r="96" fill="#ff5500"/>
-  <circle cx="664" cy="389" r="86" fill="#0a0a12"/>
-
-  <!-- reel hubs -->
-  <circle cx="360" cy="389" r="34" fill="#ff5500"/>
-  <circle cx="360" cy="389" r="12" fill="#0a0a12"/>
-  <circle cx="664" cy="389" r="34" fill="#ff5500"/>
-  <circle cx="664" cy="389" r="12" fill="#0a0a12"/>
+  <!-- lower shell corner screws -->
+  <circle cx="250" cy="690" r="24" fill="#0a0a0a"/>
+  <circle cx="250" cy="690" r="15" fill="#585d66"/>
+  <circle cx="774" cy="690" r="24" fill="#0a0a0a"/>
+  <circle cx="774" cy="690" r="15" fill="#585d66"/>
 
   <!-- label -->
-  <rect x="268" y="560" width="488" height="130" rx="14" fill="#ff5500"/>
-  <rect x="276" y="568" width="472" height="114" rx="10" fill="#0a0a12"/>
-  <rect x="308" y="600" width="220" height="18" rx="9" fill="rgba(255,255,255,0.5)"/>
-  <rect x="308" y="636" width="150" height="18" rx="9" fill="rgba(255,255,255,0.3)"/>
+  <rect x="228" y="284" width="568" height="392" rx="20" fill="#f3e4c8"/>
 
-  <!-- screw posts -->
-  <circle cx="234" cy="690" r="14" fill="rgba(255,255,255,0.18)"/>
-  <circle cx="790" cy="690" r="14" fill="rgba(255,255,255,0.18)"/>
+  <!-- color stripe band -->
+  <rect x="228" y="330" width="568" height="26" fill="#e0483f"/>
+  <rect x="228" y="356" width="568" height="26" fill="#eba93a"/>
+  <rect x="228" y="382" width="568" height="26" fill="#b8d24a"/>
+  <rect x="228" y="408" width="568" height="26" fill="#3ec6c1"/>
+
+  <!-- reel housing (sits on top of the stripe band) -->
+  <rect x="300" y="322" width="424" height="176" rx="42" fill="#121018"/>
+
+  <!-- tape window between the reels -->
+  <rect x="462" y="392" width="100" height="36" rx="10" fill="#3a2a1e"/>
+  <rect x="500" y="392" width="24" height="36" fill="#f3e4c8"/>
+
+  <!-- left reel -->
+  <circle cx="412" cy="410" r="64" fill="#aeb4bd"/>
+  <circle cx="412" cy="410" r="50" fill="#121018"/>
+  <circle cx="412" cy="410" r="34" fill="#aeb4bd"/>
+  <circle cx="412" cy="410" r="12" fill="#121018"/>
+  <rect x="404" y="336" width="16" height="22" rx="4" fill="#aeb4bd"/>
+  <rect x="404" y="462" width="16" height="22" rx="4" fill="#aeb4bd"/>
+  <rect x="338" y="402" width="22" height="16" rx="4" fill="#aeb4bd"/>
+  <rect x="464" y="402" width="22" height="16" rx="4" fill="#aeb4bd"/>
+
+  <!-- right reel -->
+  <circle cx="612" cy="410" r="64" fill="#aeb4bd"/>
+  <circle cx="612" cy="410" r="50" fill="#121018"/>
+  <circle cx="612" cy="410" r="34" fill="#aeb4bd"/>
+  <circle cx="612" cy="410" r="12" fill="#121018"/>
+  <rect x="604" y="336" width="16" height="22" rx="4" fill="#aeb4bd"/>
+  <rect x="604" y="462" width="16" height="22" rx="4" fill="#aeb4bd"/>
+  <rect x="538" y="402" width="22" height="16" rx="4" fill="#aeb4bd"/>
+  <rect x="664" y="402" width="22" height="16" rx="4" fill="#aeb4bd"/>
+
+  <!-- index lines -->
+  <rect x="260" y="588" width="504" height="10" rx="5" fill="#c9b896"/>
+  <rect x="260" y="618" width="504" height="10" rx="5" fill="#c9b896"/>
+
+  <!-- shell corner screws -->
+  <circle cx="250" cy="310" r="24" fill="#0a0a0a"/>
+  <circle cx="250" cy="310" r="15" fill="#585d66"/>
+  <circle cx="774" cy="310" r="24" fill="#0a0a0a"/>
+  <circle cx="774" cy="310" r="15" fill="#585d66"/>
 </svg>

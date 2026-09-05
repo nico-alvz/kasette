@@ -20,8 +20,8 @@ English.
 
 Comments should explain **why**, not **what**. Don't restate what the next
 line of code obviously does. A comment earns its place when it captures a
-non-obvious reason — a browser quirk being worked around, a schema decision,
-a constraint from a platform API — not when it narrates the code.
+non-obvious reason, such as a browser quirk being worked around, a schema
+decision, or a constraint from a platform API, not when it narrates the code.
 
 ## Dependencies
 

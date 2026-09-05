@@ -764,7 +764,7 @@ function viewHome() {
 function searchResultsHTML() {
   const res = searchResults();
   if (!searchQ.trim())
-    return `<p class="dim" style="padding-top:20px">Search your library by title, artist, or album.</p>`;
+    return `<p class="dim" style="padding-top:6px">Search your library by title, artist, or album.</p>`;
   if (!res.length) return `<div class="empty-mid">No results for “${esc(searchQ)}”.</div>`;
   return res.map((t) => rowHTML(t, "search")).join("");
 }

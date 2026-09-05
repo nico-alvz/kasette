@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - Export/restore the whole library (songs, art, playlists) as a single backup
-  file — pick a USB-C drive as the destination if your browser offers it.
+  file. You can pick a USB-C drive as the destination if your browser offers it.
 - Orange is now the default accent color.
 - The Android status bar's icon color now follows the in-app light/dark theme.
 
