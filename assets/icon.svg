@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Combined flat icon (background + foreground), rounded-rect masked.
+       No gradients: flat/layered shapes only (see icon-background.svg and
+       icon-foreground.svg for why). -->
+  <defs>
+    <clipPath id="mask">
+      <rect width="1024" height="1024" rx="232"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#mask)">
+    <rect width="1024" height="1024" fill="#05060a"/>
+    <ellipse cx="512" cy="360" rx="760" ry="620" fill="#0c1024"/>
+    <ellipse cx="512" cy="230" rx="480" ry="380" fill="#1e1b4b"/>
+
+    <!-- plinth (turntable body) -->
+    <rect x="200" y="290" width="600" height="480" rx="40" fill="#15151f"/>
+
+    <!-- platter / vinyl record -->
+    <circle cx="452" cy="530" r="222" fill="#0a0a12"/>
+    <circle cx="452" cy="530" r="222" fill="none" stroke="#22c55e" stroke-width="10"/>
+    <circle cx="452" cy="530" r="168" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="8"/>
+    <circle cx="452" cy="530" r="118" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="8"/>
+
+    <!-- center label -->
+    <circle cx="452" cy="530" r="58" fill="#22c55e"/>
+    <circle cx="452" cy="530" r="16" fill="#0a0a12"/>
+
+    <!-- tonearm -->
+    <line x1="742" y1="352" x2="556" y2="470" stroke="#22c55e" stroke-width="30" stroke-linecap="round"/>
+    <circle cx="742" cy="352" r="46" fill="#22c55e"/>
+    <circle cx="742" cy="352" r="18" fill="#0a0a12"/>
+    <rect x="524" y="446" width="64" height="40" rx="12" fill="#22c55e" transform="rotate(-35 556 466)"/>
+  </g>
+</svg>

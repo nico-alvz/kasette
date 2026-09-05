@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Sonora</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <style>
+    /* Light is the default theme (SoundCloud-style: bright surface, dark
+       text, an accent color for controls). Dark mode overrides these same
+       variables below via [data-theme="dark"], toggled from Settings. */
+    :root {
+      color-scheme: light;
+      --accent: #22c55e;
+      --bg0: #ffffff;
+      --bg1: #f6f6f8;
+      --bg2: #ffffff;
+      --txt: #121212;
+      --txt2: rgba(18,18,18,.62);
+      --txt3: rgba(18,18,18,.40);
+      --surf: rgba(18,18,18,.05);
+      --surf2: rgba(18,18,18,.08);
+      --line: rgba(18,18,18,.10);
+      --nav-bg: #ffffff;
+      --sheet-bg: #ffffff;
+      --player-bg: #ffffff;
+      --mini-bg: rgba(255,255,255,.92);
+      --track-bg: rgba(18,18,18,.14);
+      --toast-bg: #121212;
+      --toast-txt: #ffffff;
+      --swatch-ring: #121212;
+      --play-bg: #121212;
+      --play-fg: #ffffff;
+      --nav-h: 58px;
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg0: #1e1b4b;
+      --bg1: #0c1024;
+      --bg2: #05060a;
+      --txt: #ffffff;
+      --txt2: rgba(255,255,255,.62);
+      --txt3: rgba(255,255,255,.40);
+      --surf: rgba(255,255,255,.055);
+      --surf2: rgba(255,255,255,.09);
+      --line: rgba(255,255,255,.09);
+      --nav-bg: #08080d;
+      --sheet-bg: #15151c;
+      --player-bg: #0c0913;
+      --mini-bg: rgba(28,26,46,.92);
+      --track-bg: rgba(255,255,255,.22);
+      --toast-bg: #ffffff;
+      --toast-txt: #111111;
+      --swatch-ring: #ffffff;
+      --play-bg: #ffffff;
+      --play-fg: #000000;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+    body {
+      font: 15px/1.4 -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+      color: var(--txt);
+      background: var(--bg2);
+      -webkit-user-select: none; user-select: none;
+      overscroll-behavior: none;
+    }
+    button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+    .svg { width: 24px; height: 24px; display: block; stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* App container: fixed inset:0 — Samsung Internet/Chrome don't always
+       honor 100dvh on flex children (panes end up collapsed). */
+    #app { position: fixed; inset: 0; display: flex; flex-direction: column;
+      background:
+        radial-gradient(130% 80% at 50% -10%, var(--bg0) 0%, var(--bg1) 46%, var(--bg2) 78%); }
+
+    /* ───────── views ───────── */
+    #view { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+      padding: calc(var(--safe-t) + 14px) 18px 0; }
+    #view::-webkit-scrollbar { width: 0; }
+    /* leaves room for the mini-player + bottom nav */
+    .pad-bottom { height: calc(var(--nav-h) + var(--safe-b) + 92px); }
+
+    .h-greet { font-size: 1.9rem; font-weight: 900; letter-spacing: -.5px; margin: 6px 0 22px; }
+    .sec { margin-bottom: 30px; }
+    .sec-head { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+    .sec-head .svg { width: 18px; height: 18px; color: var(--accent); }
+    .sec-title { font-size: 1.22rem; font-weight: 800; }
+    .sub { font-size: .72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--txt2); margin: 0 0 10px; }
+    .dim { color: var(--txt3); font-size: .9rem; padding: 6px 0; }
+
+    /* primary action card (import) */
+    .card-cta { display: flex; align-items: center; gap: 14px; padding: 15px;
+      background: var(--surf); border: 1px solid var(--line); border-radius: 13px; width: 100%; text-align: left; }
+    .card-cta:active { background: var(--surf2); }
+    .cta-ic { width: 54px; height: 54px; border-radius: 9px; display: grid; place-items: center;
+      background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); flex: none; }
+    .cta-ic .svg { width: 26px; height: 26px; }
+    .cta-t { font-size: 1rem; font-weight: 700; }
+    .cta-d { color: var(--txt2); font-size: .8rem; margin-top: 2px; }
+
+    /* track row */
+    .row { display: flex; align-items: center; gap: 12px; padding: 8px 0; width: 100%;
+      max-width: 100%; min-width: 0; text-align: left; }
+    .row:active { opacity: .7; }
+    /* the inner play-button is a flex item: it needs min-width:0 so the title
+       truncates with an ellipsis instead of pushing the row past the margin. */
+    .row .row { min-width: 0; }
+    .row-idx { color: var(--txt3); font-size: .8rem; width: 22px; text-align: right;
+      font-variant-numeric: tabular-nums; flex: none; }
+    .art { width: 50px; height: 50px; border-radius: 6px; flex: none; object-fit: cover;
+      background: var(--surf2); display: grid; place-items: center; overflow: hidden; }
+    .art.lg { width: 56px; height: 56px; }
+    .art .svg { width: 22px; height: 22px; color: var(--accent); }
+    .art img { width: 100%; height: 100%; object-fit: cover; }
+    .row-main { flex: 1; min-width: 0; display: block; }
+    /* display:block is required: overflow/text-overflow don't apply to inline
+       elements (the <span>s), so the title wouldn't truncate and the row
+       overflowed the margin. */
+    .row-t { display: block; max-width: 100%; font-size: .95rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-t.active { color: var(--accent); }
+    .row-a { display: block; max-width: 100%; color: var(--txt2); font-size: .82rem; margin-top: 1px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-dur { color: var(--txt3); font-size: .78rem; font-variant-numeric: tabular-nums; flex: none; }
+    .row-btn { padding: 8px; color: var(--txt2); flex: none; }
+    .row-btn .svg { width: 20px; height: 20px; }
+
+    .btn-wide { margin-top: 12px; width: 100%; padding: 13px; border-radius: 11px;
+      background: var(--surf); color: var(--txt2); font-size: .85rem; font-weight: 600; }
+    .btn-wide:active { background: var(--surf2); }
+
+    /* ───────── home ───────── */
+    .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 26px; }
+    .quick-tile { display: flex; align-items: center; gap: 10px; height: 56px; overflow: hidden; text-align: left;
+      background: var(--surf); border: 1px solid var(--line); border-radius: 8px; }
+    .quick-tile:active { background: var(--surf2); }
+    .quick-ic { width: 56px; height: 56px; flex: none; display: grid; place-items: center;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 55%, #000), #15151f); }
+    .quick-ic.sys { background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 26%, #0a0a12)); }
+    .quick-ic .svg { width: 22px; height: 22px; color: #fff; }
+    /* 2 lines: long names like "Imported songs" no longer get cut off oddly */
+    .quick-t { min-width: 0; padding-right: 8px; font-size: .8rem; font-weight: 700; line-height: 1.15;
+      overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .sec-title2 { font-size: 1.35rem; font-weight: 800; letter-spacing: -.3px; margin: 4px 0 14px; }
+    .carousel { display: flex; gap: 14px; overflow-x: auto; overflow-y: hidden; margin: 0 -18px 24px;
+      padding: 2px 18px 8px; scroll-snap-type: x mandatory; }
+    .carousel::-webkit-scrollbar { height: 0; }
+    .cx-card { flex: none; width: 150px; scroll-snap-align: start; text-align: left;
+      background: var(--surf); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+    .cx-card:active { background: var(--surf2); }
+    .cx-art { display: grid; place-items: center; width: 100%; aspect-ratio: 1; margin-bottom: 10px;
+      border-radius: 8px; overflow: hidden; background: var(--surf2); box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+    .cx-art img { width: 100%; height: 100%; object-fit: cover; }
+    .cx-art .svg { width: 30px; height: 30px; color: var(--accent); }
+    .cx-t { display: block; font-size: .88rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cx-a { display: block; margin-top: 2px; color: var(--txt2); font-size: .76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* pills / playlists — each playlist is a glass card */
+    .pl-row { display: flex; align-items: center; gap: 14px; padding: 10px 12px; margin-bottom: 10px;
+      width: 100%; text-align: left; background: var(--surf); border: 1px solid var(--line); border-radius: 12px; }
+    .pl-row:active { background: var(--surf2); }
+    .pl-ic { width: 54px; height: 54px; border-radius: 8px; flex: none; display: grid; place-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,.35);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 55%, #000), #15151f); }
+    .pl-ic .svg { width: 24px; height: 24px; color: #fff; }
+    .pl-t { display: block; max-width: 100%; font-size: 1rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pl-c { display: block; max-width: 100%; color: var(--txt2); font-size: .8rem; margin-top: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* library header + sort */
+    .lib-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 6px 0 6px; }
+    .lib-head .h-greet { margin: 0; }
+    .icon-btn { width: 42px; height: 42px; border-radius: 999px; display: grid; place-items: center;
+      color: var(--txt); flex: none; }
+    .icon-btn:active { background: var(--surf2); }
+    .icon-btn .svg { width: 26px; height: 26px; }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 2px 0 14px; }
+    .chip { padding: 6px 14px; border-radius: 999px; font-size: .78rem; font-weight: 600;
+      background: var(--surf2); border: 1px solid var(--line); color: var(--txt); }
+    .chip.on { background: color-mix(in srgb, var(--accent) 22%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--txt); }
+    .pl-ic.sys { background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 26%, #0a0a12)); }
+
+    /* playlist detail — compact header (no cover art) */
+    .detail-hero { margin: 0 -18px 4px; padding: 2px 18px 14px;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 30%, transparent) 0%, transparent 100%); }
+    .detail-back { margin: 0 0 8px -8px; }
+    .detail-title { font-size: 1.5rem; font-weight: 900; letter-spacing: -.4px; line-height: 1.15; margin: 4px 0;
+      overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .detail-sub { display: block; color: var(--txt2); font-size: .8rem; font-weight: 600; margin: 0; }
+    /* controls on the right (shuffle + accent play) */
+    .detail-actions { display: flex; align-items: center; justify-content: flex-end; gap: 20px; margin: 6px 0 12px; }
+    .det-shuffle { color: var(--txt2); }
+    .det-shuffle .svg { width: 26px; height: 26px; }
+    .fab-play { width: 56px; height: 56px; border-radius: 999px; background: var(--accent); color: #04240f;
+      display: grid; place-items: center; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
+    .fab-play .svg { width: 26px; height: 26px; fill: currentColor; stroke: none; margin-left: 2px; }
+    .fab-play:active { transform: scale(.96); }
+    /* "Add to this playlist" row */
+    .add-row { display: flex; align-items: center; gap: 14px; padding: 8px 0 12px; width: 100%; text-align: left; }
+    .add-row:active { opacity: .7; }
+    .add-row-ic { width: 50px; height: 50px; border-radius: 6px; flex: none; display: grid; place-items: center;
+      background: var(--surf2); }
+    .add-row-ic .svg { width: 24px; height: 24px; color: var(--txt); }
+    .add-row .pl-t { font-size: .95rem; font-weight: 700; }
+
+    /* search */
+    .search-wrap { position: sticky; top: 0; padding: 4px 0 14px;
+      background: linear-gradient(var(--bg1), color-mix(in srgb, var(--bg1) 60%, transparent)); z-index: 5; }
+    .search-in { width: 100%; padding: 13px 14px; border-radius: 10px;
+      border: 1px solid var(--line); box-shadow: 0 1px 6px rgba(0,0,0,.08);
+      background: #fff; color: #111; font-size: 1rem; font-weight: 600; }
+    .search-in::placeholder { color: #777; font-weight: 500; }
+
+    /* settings */
+    .set-grp { margin-bottom: 26px; }
+    .swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+    .sw { width: 42px; height: 42px; border-radius: 999px; border: 2px solid transparent; }
+    .sw.on { border-color: var(--swatch-ring); }
+    .set-line { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .set-line .lbl { font-size: .95rem; font-weight: 600; }
+    .set-line .val { color: var(--txt2); font-size: .82rem; }
+    .danger { color: #ff6b6b; }
+
+    /* ───────── mini player ───────── */
+    #mini { position: absolute; left: 8px; right: 8px; bottom: calc(var(--nav-h) + var(--safe-b) + 6px);
+      border-radius: 11px; overflow: hidden; background: var(--mini-bg);
+      border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0,0,0,.25);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); display: none; }
+    #mini.show { display: block; }
+    .mini-row { display: flex; align-items: center; gap: 11px; padding: 9px 10px; }
+    .mini-art { width: 42px; height: 42px; border-radius: 6px; overflow: hidden; flex: none;
+      background: var(--surf2); display: grid; place-items: center; }
+    .mini-art img { width: 100%; height: 100%; object-fit: cover; }
+    .mini-art .svg { width: 18px; height: 18px; color: var(--accent); }
+    .mini-info { flex: 1; min-width: 0; }
+    .mini-t { font-size: .86rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mini-a { color: var(--txt2); font-size: .76rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mini-btn { padding: 7px; flex: none; }
+    .mini-prog { height: 2px; background: var(--track-bg); }
+    .mini-prog > i { display: block; height: 100%; background: var(--accent); width: 0; }
+
+    /* ───────── bottom nav ───────── */
+    #nav { display: flex; height: calc(var(--nav-h) + var(--safe-b)); padding-bottom: var(--safe-b);
+      background: var(--nav-bg); border-top: 1px solid var(--line); flex: none; }
+    #nav button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; color: var(--txt3); font-size: .62rem; font-weight: 600; }
+    #nav button.on { color: var(--txt); }
+    #nav .svg { width: 23px; height: 23px; }
+
+    /* ───────── full player ───────── */
+    /* Failure-proof OPAQUE background: a solid base color + an accent
+       gradient on top. If the browser (older Samsung Internet) doesn't
+       support color-mix, the background-image is dropped but the solid
+       background-color remains → never transparent. No backdrop-filter here
+       (it was causing jank); will-change promotes this to a GPU layer for a
+       smooth slide animation. */
+    #player { position: absolute; inset: 0; z-index: 40; display: flex; flex-direction: column;
+      transform: translateY(100%); transition: transform .3s cubic-bezier(.22,.61,.36,1);
+      will-change: transform;
+      padding: calc(var(--safe-t) + 6px) 26px calc(var(--safe-b) + 22px);
+      background-color: var(--player-bg);
+      background-image: linear-gradient(180deg,
+        color-mix(in srgb, var(--accent) 30%, transparent) 0%,
+        transparent 58%); }
+    #player.open { transform: translateY(0); }
+    .pl-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+    .pl-head .lbl { text-align: center; font-size: .62rem; letter-spacing: 2px; font-weight: 800; color: var(--txt2); }
+    .pl-head .lbl b { display: block; font-size: .78rem; color: var(--txt); letter-spacing: 0; margin-top: 2px; font-weight: 700;
+      max-width: 60vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pl-art-wrap { flex: 1; display: grid; place-items: center; padding: 18px 0; min-height: 0; }
+    .pl-art { width: min(74vw, 360px); aspect-ratio: 1; border-radius: 12px; overflow: hidden;
+      background: var(--surf2); display: grid; place-items: center; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+    .pl-art img { width: 100%; height: 100%; object-fit: cover; }
+    .pl-art .big { font-size: 5rem; font-weight: 900; color: var(--accent); }
+    .pl-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .pl-meta .m { flex: 1; min-width: 0; }
+    .pl-song { font-size: 1.45rem; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pl-artist { color: var(--txt2); font-size: 1rem; margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Progress bar: the track fills with the accent color up to --seek (JS
+       updates it). WebKit/Samsung don't paint the played portion on their
+       own, so we use a two-stop gradient on the input's own background. */
+    .pl-seek { width: 100%; -webkit-appearance: none; appearance: none; height: 5px; border-radius: 4px;
+      margin: 14px 0 4px;
+      background: linear-gradient(to right,
+        var(--accent) 0%, var(--accent) var(--seek, 0%),
+        var(--track-bg) var(--seek, 0%), var(--track-bg) 100%); }
+    .pl-seek::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+      background: var(--play-bg); box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+    .pl-seek::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--play-bg); }
+    .pl-seek::-moz-range-progress { background: var(--accent); height: 5px; border-radius: 4px; }
+    .pl-time { display: flex; justify-content: space-between; color: var(--txt2); font-size: .7rem; font-weight: 600;
+      font-variant-numeric: tabular-nums; }
+    .pl-ctrls { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 4px; }
+    .pl-ctrls .svg { width: 30px; height: 30px; }
+    .pl-ctrls .sm { color: var(--txt); }
+    .pl-play { width: 58px; height: 58px; border-radius: 999px; background: var(--play-bg); color: var(--play-fg);
+      display: grid; place-items: center; }
+    .pl-play .svg { width: 25px; height: 25px; fill: var(--play-fg); stroke: var(--play-fg); }
+    .on-accent { color: var(--accent) !important; }
+    /* player footer: queue (up-next) button */
+    .pl-foot { display: flex; align-items: center; justify-content: flex-end; margin-top: 14px; }
+    .pl-foot-btn { display: inline-flex; align-items: center; gap: 7px; color: var(--txt2);
+      font-size: .78rem; font-weight: 600; padding: 6px 4px; }
+    .pl-foot-btn .svg { width: 20px; height: 20px; }
+    .pl-foot-btn:active { color: var(--txt); }
+
+    /* ───────── modal ───────── */
+    #modal { position: absolute; inset: 0; z-index: 60; display: none; align-items: flex-end;
+      background: rgba(0,0,0,.55); }
+    #modal.show { display: flex; }
+    .sheet { width: 100%; background: var(--sheet-bg); border-radius: 18px 18px 0 0; padding: 16px 18px;
+      padding-bottom: calc(var(--safe-b) + 18px); max-height: 76vh; overflow-y: auto; }
+    .sheet h3 { margin: 4px 0 14px; font-size: 1.05rem; }
+    .sheet .row-t { font-size: .92rem; }
+    .grab { width: 36px; height: 4px; border-radius: 4px; background: var(--surf2); margin: 0 auto 12px; }
+    .mk-pl { display: flex; gap: 10px; margin: 6px 0 16px; }
+    .mk-pl input { flex: 1; min-width: 0; padding: 11px; border-radius: 9px; border: 1px solid var(--line);
+      background: var(--surf); color: var(--txt); font-size: .95rem; }
+    .mk-pl button { padding: 0 16px; border-radius: 9px; background: var(--accent); color: #04240f; font-weight: 800; }
+    .opt { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 0; }
+    .opt .svg { width: 20px; height: 20px; color: var(--txt2); flex: none; }
+    .opt .chk { margin-left: auto; color: var(--accent); }
+
+    .toast { position: absolute; left: 50%; bottom: calc(var(--nav-h) + var(--safe-b) + 78px);
+      transform: translateX(-50%); background: var(--toast-bg); color: var(--toast-txt); font-weight: 700; font-size: .82rem;
+      padding: 10px 16px; border-radius: 999px; z-index: 80; opacity: 0; transition: opacity .2s;
+      pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+    .empty-mid { text-align: center; color: var(--txt3); padding: 60px 20px; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="view"></div>
+    <div id="mini"></div>
+    <nav id="nav"></nav>
+  </div>
+  <div id="player"></div>
+  <div id="modal"></div>
+  <div id="toast" class="toast"></div>
+
+  <!-- A single persistent <audio> element. Background playback (screen off /
+       browser out of focus) depends on this element + the Media Session API;
+       it is never paused when the page is hidden. -->
+  <audio id="audio" preload="metadata"></audio>
+
+  <input id="filepick" type="file" accept="audio/*,.mp3,.flac,.m4a,.ogg,.opus,.wav,.aac" multiple hidden>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

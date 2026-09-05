@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Turntable, flat/geometric, Material-You style. Every shape sits inside
+       the 176..848 safe box (inner 66% of 1024) so it survives an adaptive
+       icon's circle/squircle mask. Flat fills only (no gradients): the
+       target rasterizer here has no gradient support. -->
+
+  <!-- plinth (turntable body) -->
+  <rect x="200" y="290" width="600" height="480" rx="40" fill="#15151f"/>
+
+  <!-- platter / vinyl record -->
+  <circle cx="452" cy="530" r="222" fill="#0a0a12"/>
+  <circle cx="452" cy="530" r="222" fill="none" stroke="#22c55e" stroke-width="10"/>
+  <circle cx="452" cy="530" r="168" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="8"/>
+  <circle cx="452" cy="530" r="118" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="8"/>
+
+  <!-- center label -->
+  <circle cx="452" cy="530" r="58" fill="#22c55e"/>
+  <circle cx="452" cy="530" r="16" fill="#0a0a12"/>
+
+  <!-- tonearm -->
+  <line x1="742" y1="352" x2="556" y2="470" stroke="#22c55e" stroke-width="30" stroke-linecap="round"/>
+  <circle cx="742" cy="352" r="46" fill="#22c55e"/>
+  <circle cx="742" cy="352" r="18" fill="#0a0a12"/>
+  <rect x="524" y="446" width="64" height="40" rx="12" fill="#22c55e" transform="rotate(-35 556 466)"/>
+</svg>

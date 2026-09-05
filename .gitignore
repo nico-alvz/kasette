@@ -1,0 +1,14 @@
+node_modules/
+
+# Android build artifacts
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/release/
+
+# signing keys — never commit these
+*.keystore
+*.jks
+
+.DS_Store

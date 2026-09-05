@@ -1,0 +1,23 @@
+{
+  "name": "sonora",
+  "version": "1.0.0",
+  "private": false,
+  "description": "A 100% offline, client-side music player PWA — import local audio files, play in the background, no accounts, no servers.",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "dev": "npx --yes serve www",
+    "cap:sync": "npx cap sync android",
+    "cap:android": "npx cap open android",
+    "assets:generate": "npx capacitor-assets generate",
+    "lint": "eslint www/*.js"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/android": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/assets": "^3.0.0",
+    "eslint": "^9.0.0"
+  }
+}
