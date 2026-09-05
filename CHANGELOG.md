@@ -16,5 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Background playback via the Media Session API (lock screen / notification controls).
 - Offline-first PWA, installable on desktop and mobile.
 - Light theme by default, with a dark mode, accent colors, and background options.
+- Export/restore the whole library as a single backup file, for offline copies (e.g. a USB-C drive).
 - Search across title, artist, and album.
 - Android app via Capacitor.

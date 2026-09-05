@@ -18,6 +18,8 @@ export default [
         Audio: "readonly",
         MediaMetadata: "readonly",
         TextDecoder: "readonly",
+        TextEncoder: "readonly",
+        DataView: "readonly",
         history: "readonly",
         console: "readonly",
         setTimeout: "readonly",

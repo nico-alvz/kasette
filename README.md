@@ -23,6 +23,7 @@ already own, imported from your device.
 - Client-side ID3/FLAC tag and embedded cover art parsing (no dependencies)
 - Playlists
 - Light theme by default, with a dark mode and multiple accent colors
+- Export your whole library (songs, art, playlists) to a single backup file, and restore it later — pick a USB-C drive as the destination if your browser offers it
 - Background playback via the Media Session API (lock screen / notification controls)
 - Offline-first PWA
 - Installable on desktop and mobile

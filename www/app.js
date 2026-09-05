@@ -6,17 +6,17 @@ import { readMeta } from "./meta.js";
 
 // ───────────────────────── themes ─────────────────────────
 const ACCENTS = [
+  { name: "Tape Orange", hex: "#ff5500" },
   { name: "Signal Green", hex: "#22c55e" },
   { name: "Ocean Blue", hex: "#3b82f6" },
   { name: "Neon Pink", hex: "#ec4899" },
-  { name: "Sunset Orange", hex: "#f97316" },
   { name: "Purple", hex: "#a855f7" },
 ];
 const BACKGROUNDS = [
-  { name: "Indigo", a: "#1e1b4b", b: "#0c1024" },
-  { name: "Night", a: "#172554", b: "#0a0f1d" },
-  { name: "Charcoal", a: "#1c1c22", b: "#0a0a0c" },
-  { name: "Crimson", a: "#4c0519", b: "#1a0509" },
+  { name: "Indigo", a: "#332c66", b: "#1c1840" },
+  { name: "Night", a: "#233467", b: "#161c34" },
+  { name: "Charcoal", a: "#2b2b34", b: "#17171c" },
+  { name: "Crimson", a: "#6b1030", b: "#2c0b17" },
 ];
 
 // ───────────────────────── icons ─────────────────────────
@@ -168,7 +168,20 @@ function applyTheme() {
     r.removeProperty("--bg1");
   }
   const metaTheme = document.querySelector('meta[name="theme-color"]');
-  if (metaTheme) metaTheme.setAttribute("content", settings.mode === "dark" ? "#05060a" : "#ffffff");
+  if (metaTheme) metaTheme.setAttribute("content", settings.mode === "dark" ? "#131120" : "#ffffff");
+  syncStatusBar();
+}
+
+// In the Android app, the native status bar sits outside the WebView and
+// doesn't pick up CSS — without this its icons stay white-on-white on the
+// light theme. Uses the runtime plugin bridge (no bundler needed): it's a
+// no-op when running as a plain web page, where Capacitor isn't present.
+function syncStatusBar() {
+  const StatusBar = window.Capacitor?.Plugins?.StatusBar;
+  if (!StatusBar) return;
+  const light = settings.mode !== "dark";
+  StatusBar.setStyle({ style: light ? "DARK" : "LIGHT" }).catch(() => {});
+  StatusBar.setBackgroundColor({ color: light ? "#ffffff" : "#131120" }).catch(() => {});
 }
 
 // ───────────────────────── accessors ─────────────────────────
@@ -505,6 +518,142 @@ async function warmArt() {
   render();
 }
 
+// ───────────────────────── backup / restore ─────────────────────────
+// A single portable ".snora" file: a JSON header (library + an index of the
+// embedded blobs) followed by the audio/art bytes back-to-back. This avoids
+// pulling in a zip library while still producing one file the OS "Save As"
+// dialog can put anywhere a document provider can reach — including a
+// USB-C drive, if the device/file manager exposes it as one.
+const BACKUP_MAGIC = "SNRA1";
+
+async function exportBackup() {
+  const trackIds = Object.keys(lib.tracks);
+  if (!trackIds.length) {
+    toast("No songs to back up");
+    return;
+  }
+  toast("Preparing backup…");
+  const entries = [];
+  const parts = [];
+  let offset = 0;
+  for (const id of trackIds) {
+    const blob = await getAudio(id);
+    if (!blob) continue;
+    entries.push({ id, kind: "audio", mime: blob.type || "application/octet-stream", offset, length: blob.size });
+    parts.push(blob);
+    offset += blob.size;
+    if (lib.tracks[id].hasArt) {
+      const art = await getArt(id);
+      if (art) {
+        entries.push({ id, kind: "art", mime: art.type || "image/jpeg", offset, length: art.size });
+        parts.push(art);
+        offset += art.size;
+      }
+    }
+  }
+  const header = { createdAt: Date.now(), tracks: lib.tracks, playlists: lib.playlists, entries };
+  const headerBytes = new TextEncoder().encode(JSON.stringify(header));
+  const lenBuf = new Uint8Array(4);
+  new DataView(lenBuf.buffer).setUint32(0, headerBytes.byteLength, true);
+  const magicBytes = new TextEncoder().encode(BACKUP_MAGIC);
+  const backupBlob = new Blob([magicBytes, lenBuf, headerBytes, ...parts], { type: "application/octet-stream" });
+  const filename = `sonora-backup-${new Date().toISOString().slice(0, 10)}.snora`;
+
+  // File System Access API opens the native "Save As" dialog, letting the
+  // user pick any destination a document provider exposes — a USB-C drive
+  // included. Falls back to a plain download where it isn't supported.
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: "Sonora backup", accept: { "application/octet-stream": [".snora"] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(backupBlob);
+      await writable.close();
+      toast("Backup saved");
+      return;
+    } catch (e) {
+      if (e && e.name === "AbortError") return;
+      console.warn("showSaveFilePicker:", e);
+    }
+  }
+  const url = URL.createObjectURL(backupBlob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  toast("Backup downloaded");
+}
+
+async function pickRestoreFile() {
+  if (window.showOpenFilePicker) {
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: "Sonora backup", accept: { "application/octet-stream": [".snora"] } }],
+      });
+      restoreBackupFile(await handle.getFile());
+      return;
+    } catch (e) {
+      if (e && e.name === "AbortError") return;
+      console.warn("showOpenFilePicker:", e);
+    }
+  }
+  $("#backupPick").click();
+}
+
+async function restoreBackupFile(file) {
+  if (!file) return;
+  toast("Restoring…");
+  try {
+    const buf = new Uint8Array(await file.arrayBuffer());
+    const magicLen = BACKUP_MAGIC.length;
+    if (new TextDecoder().decode(buf.subarray(0, magicLen)) !== BACKUP_MAGIC) {
+      toast("Not a Sonora backup file");
+      return;
+    }
+    let p = magicLen;
+    const headerLen = new DataView(buf.buffer, buf.byteOffset + p, 4).getUint32(0, true);
+    p += 4;
+    const header = JSON.parse(new TextDecoder().decode(buf.subarray(p, p + headerLen)));
+    const dataStart = p + headerLen;
+
+    for (const e of header.entries || []) {
+      const bytes = buf.subarray(dataStart + e.offset, dataStart + e.offset + e.length);
+      const blob = new Blob([bytes], { type: e.mime });
+      if (e.kind === "audio") await putAudio(e.id, blob);
+      else if (e.kind === "art") await putArt(e.id, blob);
+    }
+
+    let added = 0;
+    for (const [id, t] of Object.entries(header.tracks || {})) {
+      if (!lib.tracks[id]) {
+        lib.tracks[id] = t;
+        added++;
+      }
+    }
+    for (const p2 of header.playlists || []) {
+      if (p2.system) continue; // never duplicate the built-in "Imported songs" playlist
+      if (!lib.playlists.find((x) => x.id === p2.id)) lib.playlists.push(p2);
+    }
+    const sys = imported();
+    for (const id of Object.keys(header.tracks || {})) {
+      if (!sys.trackIds.includes(id)) sys.trackIds.push(id);
+    }
+
+    saveLib();
+    render();
+    warmArt();
+    toast(added ? `${added} song(s) restored` : "Backup already up to date");
+  } catch (e) {
+    console.warn("restoreBackupFile:", e);
+    toast("Couldn't read that backup file");
+  }
+}
+
 function removeTrack(id) {
   delete lib.tracks[id];
   for (const p of lib.playlists) p.trackIds = p.trackIds.filter((t) => t !== id);
@@ -724,6 +873,14 @@ function viewSettings() {
     <div class="set-line"><span class="lbl">Playlists</span><span class="val">${lib.playlists.length}</span></div>
     <div class="set-line"><span class="lbl">Storage used</span><span class="val">${est.usage ? mb(est.usage) + " MB" : "—"}</span></div>
     <button class="btn-wide" data-act="import" style="margin-top:14px">+ Import songs</button>
+  </div>`;
+
+  html += `<div class="set-grp"><p class="sub">Backup</p>
+    <p class="dim" style="line-height:1.5">Save your whole library — songs, cover art, and
+    playlists — as one file. Pick a USB-C drive as the destination if your browser's save
+    dialog offers it, to keep an offline copy off the device.</p>
+    <button class="btn-wide" data-act="export-backup" style="margin-top:10px">Export library backup</button>
+    <button class="btn-wide" data-act="restore-backup" style="margin-top:10px">Restore from backup</button>
   </div>`;
 
   html += `<div class="set-grp"><p class="sub">Background playback</p>
@@ -1224,6 +1381,12 @@ document.addEventListener("click", (e) => {
       applyTheme();
       render();
       break;
+    case "export-backup":
+      exportBackup();
+      break;
+    case "restore-backup":
+      pickRestoreFile();
+      break;
   }
 });
 
@@ -1246,6 +1409,12 @@ $("#filepick").addEventListener("change", (e) => {
   const files = Array.from(e.target.files || []);
   e.target.value = "";
   importFiles(files);
+});
+
+$("#backupPick").addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = "";
+  restoreBackupFile(file);
 });
 
 // Don't pause on page hide: background playback depends on the <audio>

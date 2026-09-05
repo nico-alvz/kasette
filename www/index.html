@@ -43,19 +43,19 @@
     }
     :root[data-theme="dark"] {
       color-scheme: dark;
-      --bg0: #1e1b4b;
-      --bg1: #0c1024;
-      --bg2: #05060a;
+      --bg0: #322c5c;
+      --bg1: #1b1836;
+      --bg2: #131120;
       --txt: #ffffff;
       --txt2: rgba(255,255,255,.62);
       --txt3: rgba(255,255,255,.40);
-      --surf: rgba(255,255,255,.055);
-      --surf2: rgba(255,255,255,.09);
-      --line: rgba(255,255,255,.09);
-      --nav-bg: #08080d;
-      --sheet-bg: #15151c;
-      --player-bg: #0c0913;
-      --mini-bg: rgba(28,26,46,.92);
+      --surf: rgba(255,255,255,.06);
+      --surf2: rgba(255,255,255,.10);
+      --line: rgba(255,255,255,.10);
+      --nav-bg: #17151f;
+      --sheet-bg: #201d2c;
+      --player-bg: #1c1826;
+      --mini-bg: rgba(40,36,58,.92);
       --track-bg: rgba(255,255,255,.22);
       --toast-bg: #ffffff;
       --toast-txt: #111111;
@@ -159,7 +159,7 @@
       background: var(--surf); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
     .cx-card:active { background: var(--surf2); }
     .cx-art { display: grid; place-items: center; width: 100%; aspect-ratio: 1; margin-bottom: 10px;
-      border-radius: 8px; overflow: hidden; background: var(--surf2); box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+      border-radius: 8px; overflow: hidden; background: var(--surf2); box-shadow: 0 6px 16px rgba(0,0,0,.20); }
     .cx-art img { width: 100%; height: 100%; object-fit: cover; }
     .cx-art .svg { width: 30px; height: 30px; color: var(--accent); }
     .cx-t { display: block; font-size: .88rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -170,7 +170,7 @@
       width: 100%; text-align: left; background: var(--surf); border: 1px solid var(--line); border-radius: 12px; }
     .pl-row:active { background: var(--surf2); }
     .pl-ic { width: 54px; height: 54px; border-radius: 8px; flex: none; display: grid; place-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,.35);
+      box-shadow: 0 4px 12px rgba(0,0,0,.20);
       background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 55%, #000), #15151f); }
     .pl-ic .svg { width: 24px; height: 24px; color: #fff; }
     .pl-t { display: block; max-width: 100%; font-size: 1rem; font-weight: 700;
@@ -204,7 +204,7 @@
     .det-shuffle { color: var(--txt2); }
     .det-shuffle .svg { width: 26px; height: 26px; }
     .fab-play { width: 56px; height: 56px; border-radius: 999px; background: var(--accent); color: #04240f;
-      display: grid; place-items: center; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
+      display: grid; place-items: center; box-shadow: 0 8px 20px rgba(0,0,0,.25); }
     .fab-play .svg { width: 26px; height: 26px; fill: currentColor; stroke: none; margin-left: 2px; }
     .fab-play:active { transform: scale(.96); }
     /* "Add to this playlist" row */
@@ -273,7 +273,7 @@
       padding: calc(var(--safe-t) + 6px) 26px calc(var(--safe-b) + 22px);
       background-color: var(--player-bg);
       background-image: linear-gradient(180deg,
-        color-mix(in srgb, var(--accent) 30%, transparent) 0%,
+        color-mix(in srgb, var(--accent) 20%, transparent) 0%,
         transparent 58%); }
     #player.open { transform: translateY(0); }
     .pl-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
@@ -282,7 +282,7 @@
       max-width: 60vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pl-art-wrap { flex: 1; display: grid; place-items: center; padding: 18px 0; min-height: 0; }
     .pl-art { width: min(74vw, 360px); aspect-ratio: 1; border-radius: 12px; overflow: hidden;
-      background: var(--surf2); display: grid; place-items: center; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+      background: var(--surf2); display: grid; place-items: center; box-shadow: 0 20px 50px rgba(0,0,0,.30); }
     .pl-art img { width: 100%; height: 100%; object-fit: cover; }
     .pl-art .big { font-size: 5rem; font-weight: 900; color: var(--accent); }
     .pl-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
@@ -359,6 +359,7 @@
   <audio id="audio" preload="metadata"></audio>
 
   <input id="filepick" type="file" accept="audio/*,.mp3,.flac,.m4a,.ogg,.opus,.wav,.aac" multiple hidden>
+  <input id="backupPick" type="file" accept=".snora" hidden>
 
   <script type="module" src="./app.js"></script>
 </body>

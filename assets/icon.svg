@@ -9,27 +9,37 @@
   </defs>
 
   <g clip-path="url(#mask)">
-    <rect width="1024" height="1024" fill="#05060a"/>
-    <ellipse cx="512" cy="360" rx="760" ry="620" fill="#0c1024"/>
-    <ellipse cx="512" cy="230" rx="480" ry="380" fill="#1e1b4b"/>
+    <rect width="1024" height="1024" fill="#131120"/>
+    <ellipse cx="512" cy="360" rx="760" ry="620" fill="#1b1836"/>
+    <ellipse cx="512" cy="230" rx="480" ry="380" fill="#322c5c"/>
 
-    <!-- plinth (turntable body) -->
-    <rect x="200" y="290" width="600" height="480" rx="40" fill="#15151f"/>
+    <!-- cassette shell -->
+    <rect x="200" y="270" width="624" height="460" rx="44" fill="#15151f"/>
 
-    <!-- platter / vinyl record -->
-    <circle cx="452" cy="530" r="222" fill="#0a0a12"/>
-    <circle cx="452" cy="530" r="222" fill="none" stroke="#22c55e" stroke-width="10"/>
-    <circle cx="452" cy="530" r="168" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="8"/>
-    <circle cx="452" cy="530" r="118" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="8"/>
+    <!-- tape window slot between the reels -->
+    <rect x="300" y="372" width="424" height="34" rx="17" fill="#0a0a12"/>
 
-    <!-- center label -->
-    <circle cx="452" cy="530" r="58" fill="#22c55e"/>
-    <circle cx="452" cy="530" r="16" fill="#0a0a12"/>
+    <!-- reel windows (ring drawn as two flat fills, not a stroke — the target
+         rasterizer here doesn't render fill:none + stroke reliably) -->
+    <circle cx="360" cy="389" r="96" fill="#ff5500"/>
+    <circle cx="360" cy="389" r="86" fill="#0a0a12"/>
+    <circle cx="664" cy="389" r="96" fill="#ff5500"/>
+    <circle cx="664" cy="389" r="86" fill="#0a0a12"/>
 
-    <!-- tonearm -->
-    <line x1="742" y1="352" x2="556" y2="470" stroke="#22c55e" stroke-width="30" stroke-linecap="round"/>
-    <circle cx="742" cy="352" r="46" fill="#22c55e"/>
-    <circle cx="742" cy="352" r="18" fill="#0a0a12"/>
-    <rect x="524" y="446" width="64" height="40" rx="12" fill="#22c55e" transform="rotate(-35 556 466)"/>
+    <!-- reel hubs -->
+    <circle cx="360" cy="389" r="34" fill="#ff5500"/>
+    <circle cx="360" cy="389" r="12" fill="#0a0a12"/>
+    <circle cx="664" cy="389" r="34" fill="#ff5500"/>
+    <circle cx="664" cy="389" r="12" fill="#0a0a12"/>
+
+    <!-- label -->
+    <rect x="268" y="560" width="488" height="130" rx="14" fill="#ff5500"/>
+    <rect x="276" y="568" width="472" height="114" rx="10" fill="#0a0a12"/>
+    <rect x="308" y="600" width="220" height="18" rx="9" fill="rgba(255,255,255,0.5)"/>
+    <rect x="308" y="636" width="150" height="18" rx="9" fill="rgba(255,255,255,0.3)"/>
+
+    <!-- screw posts -->
+    <circle cx="234" cy="690" r="14" fill="rgba(255,255,255,0.18)"/>
+    <circle cx="790" cy="690" r="14" fill="rgba(255,255,255,0.18)"/>
   </g>
 </svg>

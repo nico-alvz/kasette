@@ -12,12 +12,13 @@
     "lint": "eslint www/*.js"
   },
   "dependencies": {
+    "@capacitor/android": "^7.0.0",
     "@capacitor/core": "^7.0.0",
-    "@capacitor/android": "^7.0.0"
+    "@capacitor/status-bar": "^7.0.6"
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.0.0",
     "@capacitor/assets": "^3.0.0",
+    "@capacitor/cli": "^7.0.0",
     "eslint": "^9.0.0"
   }
 }

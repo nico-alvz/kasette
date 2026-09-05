@@ -2,8 +2,8 @@
   <!-- Flat-shape stand-in for a radial gradient (concentric layers, lightest
        near the top) — the target rasterizer here has no gradient support, so
        true <radialGradient> fills render solid black. Reuses the app's dark
-       palette: #1e1b4b -> #0c1024 -> #05060a. -->
-  <rect width="1024" height="1024" fill="#05060a"/>
-  <ellipse cx="512" cy="360" rx="760" ry="620" fill="#0c1024"/>
-  <ellipse cx="512" cy="230" rx="480" ry="380" fill="#1e1b4b"/>
+       palette: #322c5c -> #1b1836 -> #131120. -->
+  <rect width="1024" height="1024" fill="#131120"/>
+  <ellipse cx="512" cy="360" rx="760" ry="620" fill="#1b1836"/>
+  <ellipse cx="512" cy="230" rx="480" ry="380" fill="#322c5c"/>
 </svg>
