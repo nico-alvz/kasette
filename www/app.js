@@ -235,6 +235,7 @@ function detectLocale() {
   return lang.startsWith("es") ? "es" : "en";
 }
 const LOCALE = detectLocale();
+document.documentElement.lang = LOCALE;
 
 // Named i18n() rather than the conventional t() because `t` is already used
 // pervasively in this file as the local variable name for a track object;

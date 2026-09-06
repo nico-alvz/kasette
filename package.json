@@ -1,6 +1,6 @@
 {
   "name": "kasette",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": false,
   "description": "A 100% offline, client-side music player PWA. Import local audio files, play in the background, no accounts, no servers.",
   "license": "BSD-3-Clause",

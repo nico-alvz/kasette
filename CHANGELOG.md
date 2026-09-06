@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2026-09-06
+
+### Fixed
+
+- The restore-file picker still filtered for the old `.snora` extension after
+  the backup format was renamed to `.kasette`, hiding valid backup files from
+  the dialog on browsers without the File System Access API.
+- `<html lang>` was hardcoded to `en` and never synced to the detected locale,
+  so Spanish content could render under `lang="en"`.
+
 ## [1.2.0] - 2026-09-06
 
 ### Changed
