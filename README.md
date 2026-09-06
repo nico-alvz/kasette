@@ -42,8 +42,7 @@ page. Since Kasette isn't distributed through the Play Store, you'll need to
 enable "install from unknown sources" for your browser or file manager to
 install the APK.
 
-An F-Droid submission is in progress; see
-[docs/fdroid-submission.md](./docs/fdroid-submission.md) for status and process.
+An F-Droid submission is in progress.
 
 ## Build from source
 

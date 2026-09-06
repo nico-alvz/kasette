@@ -24,9 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   IndexedDB database name, localStorage keys, and the library backup file
   format/extension (`.snora` → `.kasette`). Existing local data or backup
   files from the Sonora name won't carry over.
-- Added draft F-Droid submission metadata
-  ([docs/fdroid-metadata.yml](./docs/fdroid-metadata.yml),
-  [docs/fdroid-submission.md](./docs/fdroid-submission.md)).
+- Submitted Kasette to F-Droid.
 
 ### Added
 
