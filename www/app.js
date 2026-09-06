@@ -177,11 +177,23 @@ function applyTheme() {
 // light theme. Uses the runtime plugin bridge (no bundler needed): it's a
 // no-op when running as a plain web page, where Capacitor isn't present.
 function syncStatusBar() {
-  const StatusBar = window.Capacitor?.Plugins?.StatusBar;
-  if (!StatusBar) return;
   const light = settings.mode !== "dark";
-  StatusBar.setStyle({ style: light ? "DARK" : "LIGHT" }).catch(() => {});
-  StatusBar.setBackgroundColor({ color: light ? "#ffffff" : "#131120" }).catch(() => {});
+  const bg = light ? "#ffffff" : "#131120";
+
+  // @capacitor/status-bar's Style names describe the CONTENT color, not the
+  // background: Style.Light -> dark icons (for a light background),
+  // Style.Dark -> light icons (for a dark background). Easy to get backwards.
+  const StatusBar = window.Capacitor?.Plugins?.StatusBar;
+  if (StatusBar) {
+    StatusBar.setStyle({ style: light ? "LIGHT" : "DARK" }).catch(() => {});
+    StatusBar.setBackgroundColor({ color: bg }).catch(() => {});
+  }
+
+  // The bottom 3-button/gesture navigation bar isn't covered by
+  // @capacitor/status-bar at all; ThemeBars is this app's own tiny native
+  // plugin (android/.../ThemeBarsPlugin.java) for just that.
+  const ThemeBars = window.Capacitor?.Plugins?.ThemeBars;
+  if (ThemeBars) ThemeBars.setLight({ light, color: bg }).catch(() => {});
 }
 
 // ───────────────────────── accessors ─────────────────────────
@@ -764,7 +776,7 @@ function viewHome() {
 function searchResultsHTML() {
   const res = searchResults();
   if (!searchQ.trim())
-    return `<p class="dim" style="padding-top:6px">Search your library by title, artist, or album.</p>`;
+    return `<p class="dim" style="padding-top:6px;padding-left:14px">Search your library by title, artist, or album.</p>`;
   if (!res.length) return `<div class="empty-mid">No results for “${esc(searchQ)}”.</div>`;
   return res.map((t) => rowHTML(t, "search")).join("");
 }

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.2] - 2026-09-05
+
+### Fixed
+
+- The Android status bar had its icon color backwards: light-mode icons were
+  invisible on the white background.
+- The bottom navigation bar (3-button/gesture) now also follows the in-app
+  theme; it was always white with unreadable icons before.
+- Aligned the search helper text with the search input's own text inset.
+
 ## [1.1.1] - 2026-09-05
 
 ### Changed
