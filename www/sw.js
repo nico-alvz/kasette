@@ -1,7 +1,7 @@
-// Sonora service worker.
+// Kasette service worker.
 // Makes the app installable and serves it 100% offline (cache-first shell).
 // Imported audio does NOT live here: it lives as a Blob in IndexedDB (store.js).
-const CACHE = "sonora-v1";
+const CACHE = "kasette-v1";
 const SHELL = [
   "./",
   "./index.html",

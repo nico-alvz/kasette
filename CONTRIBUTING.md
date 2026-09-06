@@ -1,4 +1,4 @@
-# Contributing to Sonora
+# Contributing to Kasette
 
 Thanks for your interest in contributing.
 
@@ -25,6 +25,6 @@ decision, or a constraint from a platform API, not when it narrates the code.
 
 ## Dependencies
 
-Sonora's web app has zero runtime dependencies by design. Don't add a new
+Kasette's web app has zero runtime dependencies by design. Don't add a new
 dependency (including dev tooling beyond what's already configured) without
 opening an issue to discuss it first.

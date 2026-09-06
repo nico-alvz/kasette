@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-09-06
+
+### Changed
+
+- Renamed the project from Sonora to Kasette: GitHub repo, Android
+  application ID (`com.sonora.app` → `com.kasette.app`), PWA name/manifest,
+  IndexedDB database name, localStorage keys, and the library backup file
+  format/extension (`.snora` → `.kasette`). Existing local data or backup
+  files from the Sonora name won't carry over.
+- Added draft F-Droid submission metadata
+  ([docs/fdroid-metadata.yml](./docs/fdroid-metadata.yml),
+  [docs/fdroid-submission.md](./docs/fdroid-submission.md)).
+
+### Added
+
+- English and Latin American Spanish, chosen automatically from the device's
+  language. No in-app language switcher yet.
+
 ## [1.1.4] - 2026-09-06
 
 ### Added

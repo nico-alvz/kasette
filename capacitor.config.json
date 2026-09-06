@@ -1,6 +1,6 @@
 {
-  "appId": "com.sonora.app",
-  "appName": "Sonora",
+  "appId": "com.kasette.app",
+  "appName": "Kasette",
   "webDir": "www",
   "backgroundColor": "#ffffff",
   "android": {

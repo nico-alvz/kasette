@@ -1,4 +1,4 @@
-package com.sonora.app;
+package com.kasette.app;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;

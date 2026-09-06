@@ -1,5 +1,5 @@
-// Minimal ESLint flat config for Sonora's zero-dependency, no-build vanilla
-// JS (ES modules). Only catches syntax errors / obvious mistakes — no
+// Minimal ESLint flat config for Kasette's zero-dependency, no-build vanilla
+// JS (ES modules). Only catches syntax errors and obvious mistakes, no
 // opinionated style rules.
 export default [
   {

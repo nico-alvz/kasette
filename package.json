@@ -1,8 +1,8 @@
 {
-  "name": "sonora",
-  "version": "1.1.3",
+  "name": "kasette",
+  "version": "1.2.0",
   "private": false,
-  "description": "A 100% offline, client-side music player PWA — import local audio files, play in the background, no accounts, no servers.",
+  "description": "A 100% offline, client-side music player PWA. Import local audio files, play in the background, no accounts, no servers.",
   "license": "BSD-3-Clause",
   "scripts": {
     "dev": "npx --yes serve www",
@@ -10,7 +10,7 @@
     "cap:android": "npx cap open android",
     "assets:generate": "npx capacitor-assets generate",
     "lint": "eslint www/*.js",
-    "deploy:cloudflare": "wrangler pages deploy www --project-name=sonora"
+    "deploy:cloudflare": "wrangler pages deploy www --project-name=kasette"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",

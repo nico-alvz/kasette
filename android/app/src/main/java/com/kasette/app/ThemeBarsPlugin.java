@@ -1,4 +1,4 @@
-package com.sonora.app;
+package com.kasette.app;
 
 import android.graphics.Color;
 import android.view.Window;
@@ -12,7 +12,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 /**
  * Toggles the bottom 3-button/gesture navigation bar's icon color and
  * background. @capacitor/status-bar only controls the status bar; this is
- * Sonora's own minimal plugin for the navigation bar, called alongside it
+ * Kasette's own minimal plugin for the navigation bar, called alongside it
  * from syncStatusBar() in app.js whenever the in-app theme changes.
  */
 @CapacitorPlugin(name = "ThemeBars")

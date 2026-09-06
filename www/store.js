@@ -1,4 +1,4 @@
-// store.js — Sonora offline storage.
+// store.js — Kasette offline storage.
 //
 // PHILOSOPHY: everything lives on the device. Imported audio is stored as a
 // raw Blob in IndexedDB (not a volatile file:// URI), so it survives reloads,
@@ -10,7 +10,7 @@
 //   audio  (key = trackId) -> Blob   (the music file)
 //   art    (key = trackId) -> Blob   (the cover art, if any)
 
-const DB_NAME = "sonora";
+const DB_NAME = "kasette";
 const DB_VER = 1;
 
 let _db = null;

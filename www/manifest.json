@@ -1,6 +1,6 @@
 {
-  "name": "Sonora",
-  "short_name": "Sonora",
+  "name": "Kasette",
+  "short_name": "Kasette",
   "description": "Offline music player. Import your songs, play in the background, works without an app store.",
   "start_url": "./index.html",
   "scope": "./",

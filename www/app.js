@@ -1,4 +1,4 @@
-// app.js — Sonora. Offline music player: all app logic (state, rendering,
+// app.js — Kasette. Offline music player: all app logic (state, rendering,
 // audio engine, import, playlists, themes) lives in this single module.
 
 import { putAudio, getAudio, putArt, getArt, delTrack, storageEstimate } from "./store.js";
@@ -52,11 +52,222 @@ const P = {
 const ic = (n, cls = "") =>
   `<svg class="svg ${cls}" viewBox="0 0 24 24">${P[n] || ""}</svg>`;
 
+// ───────────────────────── i18n ─────────────────────────
+// Two locales for now: English and Latin American Spanish, picked once from
+// the browser/device language (no in-app switcher yet).
+const STR = {
+  en: {
+    greetNight: "Good night",
+    greetMorning: "Good morning",
+    greetAfternoon: "Good afternoon",
+    music: "Music",
+    importFirstSong: "Import your first song",
+    importFirstSongDesc: "MP3, FLAC, WAV, M4A, OGG…",
+    recentlyPlayed: "Recently played",
+    yourMusic: "Your music",
+    seeWholeLibrary: "See your whole library · {{n}} {{noun}}",
+    importMoreSongs: "Import more songs",
+    searchHeading: "Search",
+    searchPlaceholder: "What do you want to listen to?",
+    searchHelper: "Search your library by title, artist, or album.",
+    noResultsFor: "No results for “{{q}}”.",
+    yourLibrary: "Your library",
+    playlists: "Playlists",
+    playlistSongCount: "Playlist · {{n}} {{noun}}",
+    songCount: "{{n}} {{noun}}",
+    addSongs: "Add songs",
+    addToThisPlaylist: "Add to this playlist",
+    emptyPlaylist: "Empty playlist.",
+    useAddToPlaylist: "Use “Add to this playlist”.",
+    deletePlaylist: "Delete playlist",
+    settingsHeading: "Settings",
+    theme: "Theme",
+    light: "Light",
+    dark: "Dark",
+    accentColor: "Accent color",
+    background: "Background",
+    library: "Library",
+    songsLabel: "Songs",
+    storageUsed: "Storage used",
+    importSongsBtn: "+ Import songs",
+    backup: "Backup",
+    backupHelper:
+      "Save your whole library (songs, cover art, and playlists) as one file. Pick a USB-C drive as the destination if your browser's save dialog offers it, to keep an offline copy off the device.",
+    exportBackupBtn: "Export library backup",
+    restoreBackupBtn: "Restore from backup",
+    backgroundPlayback: "Background playback",
+    backgroundPlaybackHelper:
+      "Audio keeps playing with the screen off or the browser in the background, with controls on the lock screen. Install Kasette (browser menu → “Add to Home screen”) for the best experience.",
+    about: "About",
+    aboutText: "Kasette · offline player · everything stays on your device. No accounts, no servers.",
+    navHome: "Home",
+    audioNotAvailable: "Audio not available",
+    importing: "Importing…",
+    notEnoughStorage: "Not enough storage space",
+    alreadyImported: "Already imported",
+    noSongsToBackUp: "No songs to back up",
+    preparingBackup: "Preparing backup…",
+    backupSaved: "Backup saved",
+    backupDownloaded: "Backup downloaded",
+    restoring: "Restoring…",
+    notKasetteBackup: "Not a Kasette backup file",
+    couldntReadBackup: "Couldn't read that backup file",
+    backupUpToDate: "Backup already up to date",
+    playlistDeleted: "Playlist deleted",
+    removedFromPlaylist: "Removed from playlist",
+    deletedToast: "Deleted",
+    addedToPlaylist: "Added to {{name}}",
+    queueIsEmpty: "Queue is empty",
+    untitled: "Untitled",
+    unknownArtist: "Unknown",
+    audioFallbackTitle: "Audio",
+    addToPlaylistTitle: "Add to playlist",
+    newPlaylistPlaceholderInline: "New playlist…",
+    create: "Create",
+    noPlaylistsYet: "You don't have any playlists yet.",
+    addToYourLibrary: "Add to your library",
+    importSongsOpt: "Import songs",
+    newPlaylistOpt: "New playlist",
+    namePlaceholder: "Name…",
+    removeFromThisPlaylist: "Remove from this playlist",
+    deleteFromLibrary: "Delete from library",
+    playbackQueueTitle: "Playback queue",
+    addToNamed: "Add to {{name}}",
+    noSongsImportedYet: "You haven't imported any songs yet.",
+    nowPlaying: "NOW PLAYING",
+    queueLabel: "Queue",
+    ariaAdd: "Add",
+    ariaBack: "Back",
+    ariaShuffle: "Shuffle",
+    ariaPlay: "Play",
+    importedSongsPlaylist: "Imported songs",
+  },
+  es: {
+    greetNight: "Buenas noches",
+    greetMorning: "Buenos días",
+    greetAfternoon: "Buenas tardes",
+    music: "Música",
+    importFirstSong: "Importa tu primera canción",
+    importFirstSongDesc: "MP3, FLAC, WAV, M4A, OGG…",
+    recentlyPlayed: "Reproducido recientemente",
+    yourMusic: "Tu música",
+    seeWholeLibrary: "Ver toda tu biblioteca · {{n}} {{noun}}",
+    importMoreSongs: "Importar más canciones",
+    searchHeading: "Buscar",
+    searchPlaceholder: "¿Qué quieres escuchar?",
+    searchHelper: "Busca en tu biblioteca por título, artista o álbum.",
+    noResultsFor: "Sin resultados para “{{q}}”.",
+    yourLibrary: "Tu biblioteca",
+    playlists: "Listas",
+    playlistSongCount: "Lista · {{n}} {{noun}}",
+    songCount: "{{n}} {{noun}}",
+    addSongs: "Agregar canciones",
+    addToThisPlaylist: "Agregar a esta lista",
+    emptyPlaylist: "Lista vacía.",
+    useAddToPlaylist: "Usa “Agregar a esta lista”.",
+    deletePlaylist: "Eliminar lista",
+    settingsHeading: "Ajustes",
+    theme: "Tema",
+    light: "Claro",
+    dark: "Oscuro",
+    accentColor: "Color de acento",
+    background: "Fondo",
+    library: "Biblioteca",
+    songsLabel: "Canciones",
+    storageUsed: "Almacenamiento usado",
+    importSongsBtn: "+ Importar canciones",
+    backup: "Copia de seguridad",
+    backupHelper:
+      "Guarda toda tu biblioteca (canciones, carátulas y listas) en un solo archivo. Elige una unidad USB-C como destino si el cuadro de guardado de tu navegador lo permite, para tener una copia fuera del dispositivo.",
+    exportBackupBtn: "Exportar copia de la biblioteca",
+    restoreBackupBtn: "Restaurar desde una copia",
+    backgroundPlayback: "Reproducción en segundo plano",
+    backgroundPlaybackHelper:
+      "El audio sigue sonando con la pantalla apagada o el navegador en segundo plano, con controles en la pantalla de bloqueo. Instala Kasette (menú del navegador → “Agregar a pantalla de inicio”) para la mejor experiencia.",
+    about: "Acerca de",
+    aboutText: "Kasette · reproductor sin conexión · todo se queda en tu dispositivo. Sin cuentas, sin servidores.",
+    navHome: "Inicio",
+    audioNotAvailable: "Audio no disponible",
+    importing: "Importando…",
+    notEnoughStorage: "No hay suficiente espacio de almacenamiento",
+    alreadyImported: "Ya estaba importado",
+    noSongsToBackUp: "No hay canciones para respaldar",
+    preparingBackup: "Preparando copia de seguridad…",
+    backupSaved: "Copia de seguridad guardada",
+    backupDownloaded: "Copia de seguridad descargada",
+    restoring: "Restaurando…",
+    notKasetteBackup: "No es un archivo de copia de Kasette",
+    couldntReadBackup: "No se pudo leer ese archivo de copia",
+    backupUpToDate: "La copia ya está actualizada",
+    playlistDeleted: "Lista eliminada",
+    removedFromPlaylist: "Eliminada de la lista",
+    deletedToast: "Eliminada",
+    addedToPlaylist: "Agregada a {{name}}",
+    queueIsEmpty: "La cola está vacía",
+    untitled: "Sin título",
+    unknownArtist: "Desconocido",
+    audioFallbackTitle: "Audio",
+    addToPlaylistTitle: "Agregar a lista",
+    newPlaylistPlaceholderInline: "Nueva lista…",
+    create: "Crear",
+    noPlaylistsYet: "Todavía no tienes listas.",
+    addToYourLibrary: "Agregar a tu biblioteca",
+    importSongsOpt: "Importar canciones",
+    newPlaylistOpt: "Nueva lista",
+    namePlaceholder: "Nombre…",
+    removeFromThisPlaylist: "Quitar de esta lista",
+    deleteFromLibrary: "Eliminar de la biblioteca",
+    playbackQueueTitle: "Cola de reproducción",
+    addToNamed: "Agregar a {{name}}",
+    noSongsImportedYet: "Todavía no has importado canciones.",
+    nowPlaying: "REPRODUCIENDO",
+    queueLabel: "Cola",
+    ariaAdd: "Agregar",
+    ariaBack: "Atrás",
+    ariaShuffle: "Aleatorio",
+    ariaPlay: "Reproducir",
+    importedSongsPlaylist: "Canciones importadas",
+  },
+};
+
+function detectLocale() {
+  const lang = (navigator.language || "en").toLowerCase();
+  return lang.startsWith("es") ? "es" : "en";
+}
+const LOCALE = detectLocale();
+
+// Named i18n() rather than the conventional t() because `t` is already used
+// pervasively in this file as the local variable name for a track object;
+// shadowing would silently break every `t(...)` call site.
+function i18n(key, vars) {
+  let s = (STR[LOCALE] && STR[LOCALE][key]) ?? STR.en[key] ?? key;
+  if (vars) for (const k in vars) s = s.replaceAll(`{{${k}}}`, vars[k]);
+  return s;
+}
+
+// Spanish pluralizes "canción"/"canciones" (not just adding "s"), and a few
+// messages also need past-participle gender/number agreement ("agregada" vs
+// "agregadas") that a flat key -> template lookup can't express cleanly.
+function nounSong(n) {
+  if (LOCALE === "es") return n === 1 ? "canción" : "canciones";
+  return n === 1 ? "song" : "songs";
+}
+function songsAddedMsg(n) {
+  const noun = nounSong(n);
+  if (LOCALE === "es") return `${n} ${noun} ${n === 1 ? "agregada" : "agregadas"}`;
+  return `${n} ${noun} added`;
+}
+function songsRestoredMsg(n) {
+  const noun = nounSong(n);
+  if (LOCALE === "es") return `${n} ${noun} ${n === 1 ? "restaurada" : "restauradas"}`;
+  return `${n} ${noun} restored`;
+}
+
 // ───────────────────────── state ─────────────────────────
 const SYS = "system:imported";
-const LS_LIB = "sonora:lib";
-const LS_SET = "sonora:settings";
-const LS_PB = "sonora:pb";
+const LS_LIB = "kasette:lib";
+const LS_SET = "kasette:settings";
+const LS_PB = "kasette:pb";
 
 let lib = { tracks: {}, playlists: [] };
 let settings = { accentIdx: 0, bgIdx: 0, mode: "light" };
@@ -117,12 +328,12 @@ function loadAll() {
     if (l && l.tracks) lib = l;
   } catch {}
   if (!lib.playlists || !lib.playlists.length)
-    lib.playlists = [{ id: SYS, name: "Imported songs", system: true, trackIds: [], createdAt: Date.now() }];
+    lib.playlists = [{ id: SYS, name: i18n("importedSongsPlaylist"), system: true, trackIds: [], createdAt: Date.now() }];
   if (!lib.playlists.find((p) => p.id === SYS))
-    lib.playlists.unshift({ id: SYS, name: "Imported songs", system: true, trackIds: [], createdAt: Date.now() });
+    lib.playlists.unshift({ id: SYS, name: i18n("importedSongsPlaylist"), system: true, trackIds: [], createdAt: Date.now() });
   // the system playlist always keeps a fixed name (migrates old installs)
   const _imp = lib.playlists.find((p) => p.id === SYS);
-  if (_imp) _imp.name = "Imported songs";
+  if (_imp) _imp.name = i18n("importedSongsPlaylist");
   try {
     const s = JSON.parse(localStorage.getItem(LS_SET) || "null");
     if (s) settings = { ...settings, ...s };
@@ -232,7 +443,7 @@ async function play(track, queue, index) {
   if (!track) return;
   const blob = await getAudio(track.id);
   if (!blob) {
-    toast("Audio not available");
+    toast(i18n("audioNotAvailable"));
     return;
   }
   if (curURL) URL.revokeObjectURL(curURL);
@@ -387,8 +598,8 @@ function updateMediaSession(track) {
   let meta = null;
   try {
     meta = new MediaMetadata({
-      title: track.title || "Untitled",
-      artist: track.artist || "Unknown",
+      title: track.title || i18n("untitled"),
+      artist: track.artist || i18n("unknownArtist"),
       album: track.album || "",
       artwork,
     });
@@ -396,8 +607,8 @@ function updateMediaSession(track) {
     // retry without artwork in case the image upsets the constructor
     try {
       meta = new MediaMetadata({
-        title: track.title || "Untitled",
-        artist: track.artist || "Unknown",
+        title: track.title || i18n("untitled"),
+        artist: track.artist || i18n("unknownArtist"),
         album: track.album || "",
       });
     } catch {}
@@ -442,7 +653,7 @@ audio.addEventListener("loadedmetadata", () => {
 // ───────────────────────── import ─────────────────────────
 async function importFiles(files) {
   if (!files || !files.length) return;
-  toast("Importing…");
+  toast(i18n("importing"));
   let added = 0;
   for (const file of files) {
     const id = "imp-" + hash(file.name + "|" + file.size + "|" + (file.lastModified || 0));
@@ -455,7 +666,7 @@ async function importFiles(files) {
       await putAudio(id, file);
     } catch (e) {
       console.warn("putAudio:", e);
-      toast("Not enough storage space");
+      toast(i18n("notEnoughStorage"));
       continue;
     }
     let hasArt = false;
@@ -469,8 +680,8 @@ async function importFiles(files) {
     const fname = file.name.replace(/\.[^.]+$/, "").replace(/_/g, " ").trim();
     lib.tracks[id] = {
       id,
-      title: meta.title || fname || "Audio",
-      artist: meta.artist || "Unknown",
+      title: meta.title || fname || i18n("audioFallbackTitle"),
+      artist: meta.artist || i18n("unknownArtist"),
       album: meta.album || "",
       duration: 0,
       hasArt,
@@ -481,7 +692,7 @@ async function importFiles(files) {
   }
   saveLib();
   render();
-  toast(added ? `${added} song${added > 1 ? "s" : ""} added` : "Already imported");
+  toast(added ? songsAddedMsg(added) : i18n("alreadyImported"));
   computeDurations();
 }
 
@@ -531,20 +742,20 @@ async function warmArt() {
 }
 
 // ───────────────────────── backup / restore ─────────────────────────
-// A single portable ".snora" file: a JSON header (library + an index of the
+// A single portable ".kasette" file: a JSON header (library + an index of the
 // embedded blobs) followed by the audio/art bytes back-to-back. This avoids
 // pulling in a zip library while still producing one file the OS "Save As"
 // dialog can put anywhere a document provider can reach — including a
 // USB-C drive, if the device/file manager exposes it as one.
-const BACKUP_MAGIC = "SNRA1";
+const BACKUP_MAGIC = "KASF1";
 
 async function exportBackup() {
   const trackIds = Object.keys(lib.tracks);
   if (!trackIds.length) {
-    toast("No songs to back up");
+    toast(i18n("noSongsToBackUp"));
     return;
   }
-  toast("Preparing backup…");
+  toast(i18n("preparingBackup"));
   const entries = [];
   const parts = [];
   let offset = 0;
@@ -569,7 +780,7 @@ async function exportBackup() {
   new DataView(lenBuf.buffer).setUint32(0, headerBytes.byteLength, true);
   const magicBytes = new TextEncoder().encode(BACKUP_MAGIC);
   const backupBlob = new Blob([magicBytes, lenBuf, headerBytes, ...parts], { type: "application/octet-stream" });
-  const filename = `sonora-backup-${new Date().toISOString().slice(0, 10)}.snora`;
+  const filename = `kasette-backup-${new Date().toISOString().slice(0, 10)}.kasette`;
 
   // File System Access API opens the native "Save As" dialog, letting the
   // user pick any destination a document provider exposes — a USB-C drive
@@ -578,12 +789,12 @@ async function exportBackup() {
     try {
       const handle = await window.showSaveFilePicker({
         suggestedName: filename,
-        types: [{ description: "Sonora backup", accept: { "application/octet-stream": [".snora"] } }],
+        types: [{ description: "Kasette backup", accept: { "application/octet-stream": [".kasette"] } }],
       });
       const writable = await handle.createWritable();
       await writable.write(backupBlob);
       await writable.close();
-      toast("Backup saved");
+      toast(i18n("backupSaved"));
       return;
     } catch (e) {
       if (e && e.name === "AbortError") return;
@@ -598,14 +809,14 @@ async function exportBackup() {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
-  toast("Backup downloaded");
+  toast(i18n("backupDownloaded"));
 }
 
 async function pickRestoreFile() {
   if (window.showOpenFilePicker) {
     try {
       const [handle] = await window.showOpenFilePicker({
-        types: [{ description: "Sonora backup", accept: { "application/octet-stream": [".snora"] } }],
+        types: [{ description: "Kasette backup", accept: { "application/octet-stream": [".kasette"] } }],
       });
       restoreBackupFile(await handle.getFile());
       return;
@@ -619,12 +830,12 @@ async function pickRestoreFile() {
 
 async function restoreBackupFile(file) {
   if (!file) return;
-  toast("Restoring…");
+  toast(i18n("restoring"));
   try {
     const buf = new Uint8Array(await file.arrayBuffer());
     const magicLen = BACKUP_MAGIC.length;
     if (new TextDecoder().decode(buf.subarray(0, magicLen)) !== BACKUP_MAGIC) {
-      toast("Not a Sonora backup file");
+      toast(i18n("notKasetteBackup"));
       return;
     }
     let p = magicLen;
@@ -659,10 +870,10 @@ async function restoreBackupFile(file) {
     saveLib();
     render();
     warmArt();
-    toast(added ? `${added} song(s) restored` : "Backup already up to date");
+    toast(added ? songsRestoredMsg(added) : i18n("backupUpToDate"));
   } catch (e) {
     console.warn("restoreBackupFile:", e);
-    toast("Couldn't read that backup file");
+    toast(i18n("couldntReadBackup"));
   }
 }
 
@@ -716,10 +927,10 @@ function rowHTML(track, ctx, idx, opts = {}) {
 // ───────────────────────── render: views ─────────────────────────
 function greet() {
   const h = new Date().getHours();
-  if (h < 6) return "Good night";
-  if (h < 13) return "Good morning";
-  if (h < 20) return "Good afternoon";
-  return "Good night";
+  if (h < 6) return i18n("greetNight");
+  if (h < 13) return i18n("greetMorning");
+  if (h < 20) return i18n("greetAfternoon");
+  return i18n("greetNight");
 }
 
 function viewHome() {
@@ -727,11 +938,11 @@ function viewHome() {
   let html = `<h1 class="h-greet">${greet()}</h1>`;
 
   if (!tracks.length) {
-    html += `<section class="sec"><div class="sec-head">${ic("music")}<span class="sec-title">Music</span></div>
+    html += `<section class="sec"><div class="sec-head">${ic("music")}<span class="sec-title">${i18n("music")}</span></div>
       <button class="card-cta" data-act="import">
         <span class="cta-ic">${ic("folder")}</span>
-        <span><span class="cta-t">Import your first song</span>
-        <span class="cta-d">MP3, FLAC, WAV, M4A, OGG…</span></span></button>
+        <span><span class="cta-t">${i18n("importFirstSong")}</span>
+        <span class="cta-d">${i18n("importFirstSongDesc")}</span></span></button>
       </section><div class="pad-bottom"></div>`;
     return html;
   }
@@ -753,7 +964,7 @@ function viewHome() {
   const recent = recentTracks(12);
   const cx = recent.length ? recent : allTracks().slice(0, 12);
   const cxCtx = recent.length ? "recent" : "all";
-  html += `<h2 class="sec-title2">${recent.length ? "Recently played" : "Your music"}</h2>`;
+  html += `<h2 class="sec-title2">${recent.length ? i18n("recentlyPlayed") : i18n("yourMusic")}</h2>`;
   html += `<div class="carousel">`;
   html += cx
     .map((t) => {
@@ -767,8 +978,8 @@ function viewHome() {
     .join("");
   html += `</div>`;
 
-  html += `<button class="btn-wide" data-act="goto" data-view="library">See your whole library · ${tracks.length} song${tracks.length === 1 ? "" : "s"}</button>`;
-  html += `<button class="btn-wide" data-act="import">Import more songs</button>`;
+  html += `<button class="btn-wide" data-act="goto" data-view="library">${i18n("seeWholeLibrary", { n: tracks.length, noun: nounSong(tracks.length) })}</button>`;
+  html += `<button class="btn-wide" data-act="import">${i18n("importMoreSongs")}</button>`;
   html += `<div class="pad-bottom"></div>`;
   return html;
 }
@@ -776,15 +987,15 @@ function viewHome() {
 function searchResultsHTML() {
   const res = searchResults();
   if (!searchQ.trim())
-    return `<p class="dim" style="padding-top:6px;padding-left:14px">Search your library by title, artist, or album.</p>`;
-  if (!res.length) return `<div class="empty-mid">No results for “${esc(searchQ)}”.</div>`;
+    return `<p class="dim" style="padding-top:6px;padding-left:14px">${i18n("searchHelper")}</p>`;
+  if (!res.length) return `<div class="empty-mid">${i18n("noResultsFor", { q: esc(searchQ) })}</div>`;
   return res.map((t) => rowHTML(t, "search")).join("");
 }
 function viewSearch() {
   // The sticky search bar keeps its own results container so it can update
   // without rebuilding the input (this preserves focus and cursor position).
-  return `<h1 class="h-greet">Search</h1>
-    <div class="search-wrap"><input id="searchIn" class="search-in" placeholder="What do you want to listen to?" value="${esc(searchQ)}"></div>
+  return `<h1 class="h-greet">${i18n("searchHeading")}</h1>
+    <div class="search-wrap"><input id="searchIn" class="search-in" placeholder="${i18n("searchPlaceholder")}" value="${esc(searchQ)}"></div>
     <div id="searchResults">${searchResultsHTML()}</div>
     <div class="pad-bottom"></div>`;
 }
@@ -796,10 +1007,10 @@ function viewLibrary() {
   // opens its detail view. The header has a "+" button that opens the menu
   // (Import songs / New playlist).
   let html = `<div class="lib-head">
-    <h1 class="h-greet">Your library</h1>
-    <button class="icon-btn" data-act="libadd" aria-label="Add">${ic("plus")}</button>
+    <h1 class="h-greet">${i18n("yourLibrary")}</h1>
+    <button class="icon-btn" data-act="libadd" aria-label="${i18n("ariaAdd")}">${ic("plus")}</button>
   </div>`;
-  html += `<div class="chips"><span class="chip on">Playlists</span></div>`;
+  html += `<div class="chips"><span class="chip on">${i18n("playlists")}</span></div>`;
   html += lib.playlists
     .map((p) => {
       const n = p.trackIds.length;
@@ -807,7 +1018,7 @@ function viewLibrary() {
         <span class="pl-ic ${p.system ? "sys" : ""}">${ic(p.system ? "music" : "list")}</span>
         <span class="row-main">
           <span class="pl-t">${esc(p.name)}</span>
-          <span class="pl-c">Playlist · ${n} song${n === 1 ? "" : "s"}</span>
+          <span class="pl-c">${i18n("playlistSongCount", { n, noun: nounSong(n) })}</span>
         </span>
       </button>`;
     })
@@ -827,29 +1038,29 @@ function viewPlaylistDetail(id) {
   // Compact header: no cover art, just back / title / count, with the
   // controls (shuffle + accent play) on the right.
   let html = `<div class="detail-hero">
-    <button class="icon-btn detail-back" data-act="backlib" aria-label="Back">${ic("back")}</button>
+    <button class="icon-btn detail-back" data-act="backlib" aria-label="${i18n("ariaBack")}">${ic("back")}</button>
     <h1 class="detail-title">${esc(p.name)}</h1>
-    <p class="detail-sub">${n} song${n === 1 ? "" : "s"}</p>
+    <p class="detail-sub">${i18n("songCount", { n, noun: nounSong(n) })}</p>
   </div>`;
   if (n) {
     html += `<div class="detail-actions">
-      <button class="det-shuffle ${pb.shuffle ? "on-accent" : ""}" data-act="shuffle" aria-label="Shuffle">${ic("shuffle")}</button>
-      <button class="fab-play" data-act="playall" data-id="${id}" aria-label="Play">${ic("play")}</button>
+      <button class="det-shuffle ${pb.shuffle ? "on-accent" : ""}" data-act="shuffle" aria-label="${i18n("ariaShuffle")}">${ic("shuffle")}</button>
+      <button class="fab-play" data-act="playall" data-id="${id}" aria-label="${i18n("ariaPlay")}">${ic("play")}</button>
     </div>`;
   }
   // "Add to this playlist" row. In the system playlist, "add" means importing
   // files; in your own playlists, it means picking from the library.
   html += `<button class="add-row" data-act="${p.system ? "import" : "addto"}" data-id="${id}">
     <span class="add-row-ic">${ic("plus")}</span>
-    <span class="pl-t">${p.system ? "Add songs" : "Add to this playlist"}</span>
+    <span class="pl-t">${p.system ? i18n("addSongs") : i18n("addToThisPlaylist")}</span>
   </button>`;
   if (n) {
     html += tracks.map((t, i) => rowHTML(t, "pl:" + id, i, { inPlaylist: !p.system, plId: id })).join("");
   } else {
-    html += `<div class="empty-mid">Empty playlist.<br>Use “Add to this playlist”.</div>`;
+    html += `<div class="empty-mid">${i18n("emptyPlaylist")}<br>${i18n("useAddToPlaylist")}</div>`;
   }
   if (!p.system) {
-    html += `<button class="btn-wide danger" data-act="delpl" data-id="${id}" style="margin-top:20px">Delete playlist</button>`;
+    html += `<button class="btn-wide danger" data-act="delpl" data-id="${id}" style="margin-top:20px">${i18n("deletePlaylist")}</button>`;
   }
   html += `<div class="pad-bottom"></div>`;
   return html;
@@ -858,21 +1069,21 @@ function viewPlaylistDetail(id) {
 function viewSettings() {
   const est = window.__est || { usage: 0, quota: 0 };
   const mb = (b) => (b / 1048576).toFixed(b > 1073741824 ? 0 : 1);
-  let html = `<h1 class="h-greet">Settings</h1>`;
+  let html = `<h1 class="h-greet">${i18n("settingsHeading")}</h1>`;
 
-  html += `<div class="set-grp"><p class="sub">Theme</p><div class="chips">
-    <button class="chip ${settings.mode === "light" ? "on" : ""}" data-act="mode" data-m="light">Light</button>
-    <button class="chip ${settings.mode === "dark" ? "on" : ""}" data-act="mode" data-m="dark">Dark</button>
+  html += `<div class="set-grp"><p class="sub">${i18n("theme")}</p><div class="chips">
+    <button class="chip ${settings.mode === "light" ? "on" : ""}" data-act="mode" data-m="light">${i18n("light")}</button>
+    <button class="chip ${settings.mode === "dark" ? "on" : ""}" data-act="mode" data-m="dark">${i18n("dark")}</button>
   </div></div>`;
 
-  html += `<div class="set-grp"><p class="sub">Accent color</p><div class="swatches">`;
+  html += `<div class="set-grp"><p class="sub">${i18n("accentColor")}</p><div class="swatches">`;
   html += ACCENTS.map(
     (a, i) => `<button class="sw ${i === settings.accentIdx ? "on" : ""}" data-act="accent" data-i="${i}" style="background:${a.hex}"></button>`,
   ).join("");
   html += `</div></div>`;
 
   if (settings.mode === "dark") {
-    html += `<div class="set-grp"><p class="sub">Background</p><div class="swatches">`;
+    html += `<div class="set-grp"><p class="sub">${i18n("background")}</p><div class="swatches">`;
     html += BACKGROUNDS.map(
       (b, i) =>
         `<button class="sw ${i === settings.bgIdx ? "on" : ""}" data-act="bg" data-i="${i}" style="background:linear-gradient(135deg,${b.a},${b.b})"></button>`,
@@ -880,28 +1091,24 @@ function viewSettings() {
     html += `</div></div>`;
   }
 
-  html += `<div class="set-grp"><p class="sub">Library</p>
-    <div class="set-line"><span class="lbl">Songs</span><span class="val">${allTracks().length}</span></div>
-    <div class="set-line"><span class="lbl">Playlists</span><span class="val">${lib.playlists.length}</span></div>
-    <div class="set-line"><span class="lbl">Storage used</span><span class="val">${est.usage ? mb(est.usage) + " MB" : "—"}</span></div>
-    <button class="btn-wide" data-act="import" style="margin-top:14px">+ Import songs</button>
+  html += `<div class="set-grp"><p class="sub">${i18n("library")}</p>
+    <div class="set-line"><span class="lbl">${i18n("songsLabel")}</span><span class="val">${allTracks().length}</span></div>
+    <div class="set-line"><span class="lbl">${i18n("playlists")}</span><span class="val">${lib.playlists.length}</span></div>
+    <div class="set-line"><span class="lbl">${i18n("storageUsed")}</span><span class="val">${est.usage ? mb(est.usage) + " MB" : "—"}</span></div>
+    <button class="btn-wide" data-act="import" style="margin-top:14px">${i18n("importSongsBtn")}</button>
   </div>`;
 
-  html += `<div class="set-grp"><p class="sub">Backup</p>
-    <p class="dim" style="line-height:1.5">Save your whole library — songs, cover art, and
-    playlists — as one file. Pick a USB-C drive as the destination if your browser's save
-    dialog offers it, to keep an offline copy off the device.</p>
-    <button class="btn-wide" data-act="export-backup" style="margin-top:10px">Export library backup</button>
-    <button class="btn-wide" data-act="restore-backup" style="margin-top:10px">Restore from backup</button>
+  html += `<div class="set-grp"><p class="sub">${i18n("backup")}</p>
+    <p class="dim" style="line-height:1.5">${i18n("backupHelper")}</p>
+    <button class="btn-wide" data-act="export-backup" style="margin-top:10px">${i18n("exportBackupBtn")}</button>
+    <button class="btn-wide" data-act="restore-backup" style="margin-top:10px">${i18n("restoreBackupBtn")}</button>
   </div>`;
 
-  html += `<div class="set-grp"><p class="sub">Background playback</p>
-    <p class="dim" style="line-height:1.5">Audio keeps playing with the screen off or the browser in the background,
-    with controls on the lock screen. Install Sonora (browser menu → “Add to Home screen”)
-    for the best experience.</p></div>`;
+  html += `<div class="set-grp"><p class="sub">${i18n("backgroundPlayback")}</p>
+    <p class="dim" style="line-height:1.5">${i18n("backgroundPlaybackHelper")}</p></div>`;
 
-  html += `<div class="set-grp"><p class="sub">About</p>
-    <p class="dim">Sonora · offline player · everything stays on your device. No accounts, no servers.</p></div>`;
+  html += `<div class="set-grp"><p class="sub">${i18n("about")}</p>
+    <p class="dim">${i18n("aboutText")}</p></div>`;
   html += `<div class="pad-bottom"></div>`;
   return html;
 }
@@ -929,10 +1136,10 @@ function renderView() {
 
 function renderNav() {
   const items = [
-    ["home", "Home"],
-    ["search", "Search"],
-    ["library", "Library"],
-    ["settings", "Settings"],
+    ["home", i18n("navHome")],
+    ["search", i18n("searchHeading")],
+    ["library", i18n("library")],
+    ["settings", i18n("settingsHeading")],
   ];
   elNav.innerHTML = items
     .map(
@@ -976,7 +1183,7 @@ function renderPlayer() {
   elPlayer.innerHTML = `
     <div class="pl-head">
       <button data-act="closeplayer" class="row-btn">${ic("down")}</button>
-      <div class="lbl">NOW PLAYING<b>${esc(t.album || "Library")}</b></div>
+      <div class="lbl">${i18n("nowPlaying")}<b>${esc(t.album || i18n("library"))}</b></div>
       <button data-act="moreplayer" class="row-btn">${ic("more")}</button>
     </div>
     <div class="pl-art-wrap"><div class="pl-art">${
@@ -998,7 +1205,7 @@ function renderPlayer() {
       }</button>
     </div>
     <div class="pl-foot">
-      <button class="pl-foot-btn" data-act="queue">${ic("list")}<span>Queue</span></button>
+      <button class="pl-foot-btn" data-act="queue">${ic("list")}<span>${i18n("queueLabel")}</span></button>
     </div>`;
   const seek = $("#seek");
   if (seek) {
@@ -1113,9 +1320,9 @@ function openAddSheet(trackId) {
   const t = lib.tracks[trackId];
   if (!t) return;
   const pls = lib.playlists.filter((p) => !p.system);
-  let html = `<h3>Add to playlist</h3>
-    <div class="mk-pl"><input id="newPlName" placeholder="New playlist…"><button data-act="mkpl" data-id="${trackId}">Create</button></div>`;
-  if (!pls.length) html += `<p class="dim">You don't have any playlists yet.</p>`;
+  let html = `<h3>${i18n("addToPlaylistTitle")}</h3>
+    <div class="mk-pl"><input id="newPlName" placeholder="${i18n("newPlaylistPlaceholderInline")}"><button data-act="mkpl" data-id="${trackId}">${i18n("create")}</button></div>`;
+  if (!pls.length) html += `<p class="dim">${i18n("noPlaylistsYet")}</p>`;
   else
     html += pls
       .map((p) => {
@@ -1137,9 +1344,9 @@ function openAddSheet(trackId) {
 }
 function libAddSheet() {
   // The library "+" button menu: import songs or create a new playlist.
-  openModal(`<h3>Add to your library</h3>
-    <button class="opt" data-act="import">${ic("music")}<span class="pl-t">Import songs</span></button>
-    <button class="opt" data-act="newpl">${ic("list")}<span class="pl-t">New playlist</span></button>`);
+  openModal(`<h3>${i18n("addToYourLibrary")}</h3>
+    <button class="opt" data-act="import">${ic("music")}<span class="pl-t">${i18n("importSongsOpt")}</span></button>
+    <button class="opt" data-act="newpl">${ic("list")}<span class="pl-t">${i18n("newPlaylistOpt")}</span></button>`);
 }
 function trackMoreSheet(id, plId) {
   const t = lib.tracks[id];
@@ -1147,20 +1354,20 @@ function trackMoreSheet(id, plId) {
   const p = plId ? playlist(plId) : null;
   const removeOpt =
     p && !p.system
-      ? `<button class="opt" data-act="rmfrom" data-id="${id}" data-pl="${plId}">${ic("x")}<span class="pl-t">Remove from this playlist</span></button>`
+      ? `<button class="opt" data-act="rmfrom" data-id="${id}" data-pl="${plId}">${ic("x")}<span class="pl-t">${i18n("removeFromThisPlaylist")}</span></button>`
       : "";
   openModal(`<h3>${esc(t.title)}</h3>
-    <button class="opt" data-act="add" data-id="${id}">${ic("plus")}<span class="pl-t">Add to playlist</span></button>
+    <button class="opt" data-act="add" data-id="${id}">${ic("plus")}<span class="pl-t">${i18n("addToPlaylistTitle")}</span></button>
     ${removeOpt}
-    <button class="opt danger" data-act="del" data-id="${id}">${ic("trash")}<span class="pl-t" style="color:#ff6b6b">Delete from library</span></button>`);
+    <button class="opt danger" data-act="del" data-id="${id}">${ic("trash")}<span class="pl-t" style="color:#ff6b6b">${i18n("deleteFromLibrary")}</span></button>`);
 }
 // Playback queue sheet (up-next): actual data from pb.queue.
 function openQueueSheet() {
   if (!pb.queue.length) {
-    toast("Queue is empty");
+    toast(i18n("queueIsEmpty"));
     return;
   }
-  let html = `<h3>Playback queue</h3>`;
+  let html = `<h3>${i18n("playbackQueueTitle")}</h3>`;
   html += pb.queue
     .map((t, i) => {
       const cur = i === pb.qi;
@@ -1177,8 +1384,8 @@ function openAddTracksSheet(plId) {
   const p = playlist(plId);
   if (!p) return;
   const all = allTracks();
-  let html = `<h3>Add to ${esc(p.name)}</h3>`;
-  if (!all.length) html += `<p class="dim">You haven't imported any songs yet.</p>`;
+  let html = `<h3>${i18n("addToNamed", { name: esc(p.name) })}</h3>`;
+  if (!all.length) html += `<p class="dim">${i18n("noSongsImportedYet")}</p>`;
   else
     html += all
       .map((t) => {
@@ -1196,7 +1403,7 @@ function doCreatePlaylist(name, addId) {
   const nm = (name || "").trim();
   const p = {
     id: "pl_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    name: nm || "New playlist",
+    name: nm || i18n("newPlaylistOpt"),
     system: false,
     trackIds: addId ? [addId] : [],
     createdAt: Date.now(),
@@ -1205,7 +1412,7 @@ function doCreatePlaylist(name, addId) {
   saveLib();
   render();
   dismissModal();
-  if (addId) toast("Added to " + p.name);
+  if (addId) toast(i18n("addedToPlaylist", { name: p.name }));
 }
 
 // ───────────────────────── events (delegation) ─────────────────────────
@@ -1290,7 +1497,7 @@ document.addEventListener("click", (e) => {
       renderView();
       break;
     case "newpl":
-      openModal(`<h3>New playlist</h3><div class="mk-pl"><input id="newPlName" placeholder="Name…"><button data-act="mkpl">Create</button></div>`);
+      openModal(`<h3>${i18n("newPlaylistOpt")}</h3><div class="mk-pl"><input id="newPlName" placeholder="${i18n("namePlaceholder")}"><button data-act="mkpl">${i18n("create")}</button></div>`);
       {
         const inp = $("#newPlName");
         if (inp) {
@@ -1314,7 +1521,7 @@ document.addEventListener("click", (e) => {
       saveLib();
       plOpen = null;
       renderView();
-      toast("Playlist deleted");
+      toast(i18n("playlistDeleted"));
       break;
     case "rowmore":
       trackMoreSheet(id, el.dataset.pl);
@@ -1367,13 +1574,13 @@ document.addEventListener("click", (e) => {
         renderView();
       }
       dismissModal(); // rmfrom now comes from the ⋮ menu
-      toast("Removed from playlist");
+      toast(i18n("removedFromPlaylist"));
       break;
     }
     case "del":
       removeTrack(id);
       dismissModal();
-      toast("Deleted");
+      toast(i18n("deletedToast"));
       break;
     case "accent":
       settings.accentIdx = +el.dataset.i;
