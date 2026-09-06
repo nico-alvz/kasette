@@ -1,6 +1,6 @@
 {
   "name": "kasette",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "private": false,
   "description": "A 100% offline, client-side music player PWA. Import local audio files, play in the background, no accounts, no servers.",
   "license": "BSD-3-Clause",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",
+    "@capacitor/app": "^7.1.2",
     "@capacitor/core": "^7.0.0",
     "@capacitor/status-bar": "^7.0.6"
   },

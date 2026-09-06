@@ -1292,29 +1292,52 @@ function closeModal() {
 // dismiss the sheet via a user action (readable alias)
 const dismissModal = closeModal;
 
-// Android back button: must NEVER close the PWA by accident. We always keep
-// a history "guard"; each Back press closes whatever is on top, in order
-// (modal → player → playlist detail → back to Home) and re-arms the guard.
-// On Home, Back does nothing (avoids the accidental exit users hit); the app
-// is exited via the system Home button/gesture instead.
+// Back button: closes whatever is on top first, in order (modal → player →
+// playlist detail → back to Home). Returns whether it closed something, so
+// callers can decide what "nothing left to close" means for them: the web
+// popstate guard below just re-arms and stops (leaving Back inert on Home,
+// since a browser/PWA tab shouldn't self-close), while the native Android
+// hardware back button (registered further down, if @capacitor/app is
+// present) exits the app on Home instead, matching normal Android behavior.
 function handleBack() {
-  if (elModal.classList.contains("show")) return closeModal();
-  if (elPlayer.classList.contains("open")) return closePlayer();
+  if (elModal.classList.contains("show")) {
+    closeModal();
+    return true;
+  }
+  if (elPlayer.classList.contains("open")) {
+    closePlayer();
+    return true;
+  }
   if (plOpen) {
     plOpen = null;
-    return renderView();
+    renderView();
+    return true;
   }
   if (view !== "home") {
     view = "home";
     plOpen = null;
     renderNav();
     renderView();
+    return true;
   }
+  return false;
 }
 window.addEventListener("popstate", () => {
   handleBack();
   history.pushState(null, ""); // re-arm the guard for the next Back press
 });
+
+// The Android hardware/gesture back button doesn't reliably reach the WebView
+// as a popstate event (Capacitor's native BridgeActivity needs @capacitor/app
+// registered to route it into JS at all — without it, Back exits the app
+// immediately instead of navigating within it). No-op on plain web, where
+// Capacitor isn't present.
+const CapApp = window.Capacitor?.Plugins?.App;
+if (CapApp) {
+  CapApp.addListener("backButton", () => {
+    if (!handleBack()) CapApp.exitApp();
+  });
+}
 
 // add-to-playlist sheet
 function openAddSheet(trackId) {
