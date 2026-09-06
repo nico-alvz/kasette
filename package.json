@@ -9,7 +9,8 @@
     "cap:sync": "npx cap sync android",
     "cap:android": "npx cap open android",
     "assets:generate": "npx capacitor-assets generate",
-    "lint": "eslint www/*.js"
+    "lint": "eslint www/*.js",
+    "deploy:cloudflare": "wrangler pages deploy www --project-name=sonora"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.0",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.0",
     "@capacitor/cli": "^7.0.0",
-    "eslint": "^9.0.0"
+    "eslint": "^9.0.0",
+    "wrangler": "^4.0.0"
   }
 }

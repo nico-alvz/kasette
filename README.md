@@ -1,4 +1,4 @@
-# Sonora
+# 📼 Sonora
 
 A 100% offline, client-side music player PWA.
 
@@ -56,6 +56,17 @@ npx cap add android
 npm run cap:sync
 npm run cap:android   # opens the project in Android Studio
 ```
+
+## Deploy to Cloudflare Pages (optional)
+
+The live site is GitHub Pages, but `www/` can also be deployed to Cloudflare
+Pages with [Wrangler](https://developers.cloudflare.com/workers/wrangler/):
+
+```bash
+npm run deploy:cloudflare
+```
+
+See [docs/cloudflare-pages.md](./docs/cloudflare-pages.md) for setup and details.
 
 ## Tech stack
 

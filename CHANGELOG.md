@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.4] - 2026-09-06
+
+### Added
+
+- Optional Cloudflare Pages deployment via Wrangler (`wrangler.jsonc`,
+  `npm run deploy:cloudflare`), documented in
+  [docs/cloudflare-pages.md](./docs/cloudflare-pages.md). GitHub Pages remains
+  the project's actual deployment; this is an alternative reference setup.
+- 📼 next to the project name in the README.
+
 ## [1.1.3] - 2026-09-05
 
 ### Changed
