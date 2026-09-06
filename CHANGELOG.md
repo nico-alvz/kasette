@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.3] - 2026-09-05
+
+### Changed
+
+- Removed the accent-tinted gradient at the top of the playlist/album detail view.
+- Playlist and "Imported songs" icon tiles no longer fade to a heavy black; the
+  gradient stays closer to the accent color, and their shadow is lighter.
+
 ## [1.1.2] - 2026-09-05
 
 ### Fixed
