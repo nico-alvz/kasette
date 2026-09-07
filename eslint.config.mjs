@@ -16,6 +16,7 @@ export default [
         URL: "readonly",
         Blob: "readonly",
         Audio: "readonly",
+        FileReader: "readonly",
         MediaMetadata: "readonly",
         TextDecoder: "readonly",
         TextEncoder: "readonly",

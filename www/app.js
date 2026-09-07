@@ -81,6 +81,9 @@ const STR = {
     useAddToPlaylist: "Use “Add to this playlist”.",
     deletePlaylist: "Delete playlist",
     settingsHeading: "Settings",
+    language: "Language",
+    languageEn: "English",
+    languageEs: "Español",
     theme: "Theme",
     light: "Light",
     dark: "Dark",
@@ -92,7 +95,7 @@ const STR = {
     importSongsBtn: "+ Import songs",
     backup: "Backup",
     backupHelper:
-      "Save your whole library (songs, cover art, and playlists) as one file. Pick a USB-C drive as the destination if your browser's save dialog offers it, to keep an offline copy off the device.",
+      "Save your whole library (songs, cover art, and playlists) as one file. Pick any folder on your phone, an SD card, or a USB-C drive as the destination, to keep an offline copy off the device.",
     exportBackupBtn: "Export library backup",
     restoreBackupBtn: "Restore from backup",
     backgroundPlayback: "Background playback",
@@ -167,6 +170,9 @@ const STR = {
     useAddToPlaylist: "Usa “Agregar a esta lista”.",
     deletePlaylist: "Eliminar lista",
     settingsHeading: "Ajustes",
+    language: "Idioma",
+    languageEn: "English",
+    languageEs: "Español",
     theme: "Tema",
     light: "Claro",
     dark: "Oscuro",
@@ -178,7 +184,7 @@ const STR = {
     importSongsBtn: "+ Importar canciones",
     backup: "Copia de seguridad",
     backupHelper:
-      "Guarda toda tu biblioteca (canciones, carátulas y listas) en un solo archivo. Elige una unidad USB-C como destino si el cuadro de guardado de tu navegador lo permite, para tener una copia fuera del dispositivo.",
+      "Guarda toda tu biblioteca (canciones, carátulas y listas) en un solo archivo. Elige cualquier carpeta de tu teléfono, una tarjeta SD o una unidad USB-C como destino, para tener una copia fuera del dispositivo.",
     exportBackupBtn: "Exportar copia de la biblioteca",
     restoreBackupBtn: "Restaurar desde una copia",
     backgroundPlayback: "Reproducción en segundo plano",
@@ -234,7 +240,9 @@ function detectLocale() {
   const lang = (navigator.language || "en").toLowerCase();
   return lang.startsWith("es") ? "es" : "en";
 }
-const LOCALE = detectLocale();
+// Auto-detected at load, but settings.locale (set via the language chips in
+// Settings) overrides it once the user picks one explicitly — see loadAll().
+let LOCALE = detectLocale();
 document.documentElement.lang = LOCALE;
 
 // Named i18n() rather than the conventional t() because `t` is already used
@@ -271,7 +279,9 @@ const LS_SET = "kasette:settings";
 const LS_PB = "kasette:pb";
 
 let lib = { tracks: {}, playlists: [] };
-let settings = { accentIdx: 0, bgIdx: 0, mode: "light" };
+// settings.locale: null = follow the device language (detectLocale()); "en"
+// or "es" once the user picks a language explicitly in Settings.
+let settings = { accentIdx: 0, bgIdx: 0, mode: "light", locale: null };
 let pb = { current: null, queue: [], qi: -1, shuffle: false, repeat: "off", playing: false };
 
 const artURLs = {}; // id -> cover art objectURL (in-memory, per session)
@@ -299,6 +309,17 @@ function esc(s) {
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]),
   );
 }
+// Used only by the Android SAF export path, which needs the backup as a
+// base64 string to hand to @capacitor/filesystem — this reads the whole blob
+// into memory, fine for typical libraries but worth knowing for very large ones.
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(String(reader.result).split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
 function hash(s) {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h) ^ s.charCodeAt(i);
@@ -324,6 +345,14 @@ const accent = () => ACCENTS[settings.accentIdx] || ACCENTS[0];
 
 // ───────────────────────── persistence ─────────────────────────
 function loadAll() {
+  // Settings first: resolves LOCALE (device language, or the user's explicit
+  // pick from the language chips) before anything below needs i18n().
+  try {
+    const s = JSON.parse(localStorage.getItem(LS_SET) || "null");
+    if (s) settings = { ...settings, ...s };
+  } catch {}
+  LOCALE = settings.locale === "en" || settings.locale === "es" ? settings.locale : detectLocale();
+  document.documentElement.lang = LOCALE;
   try {
     const l = JSON.parse(localStorage.getItem(LS_LIB) || "null");
     if (l && l.tracks) lib = l;
@@ -335,10 +364,6 @@ function loadAll() {
   // the system playlist always keeps a fixed name (migrates old installs)
   const _imp = lib.playlists.find((p) => p.id === SYS);
   if (_imp) _imp.name = i18n("importedSongsPlaylist");
-  try {
-    const s = JSON.parse(localStorage.getItem(LS_SET) || "null");
-    if (s) settings = { ...settings, ...s };
-  } catch {}
   try {
     const p = JSON.parse(localStorage.getItem(LS_PB) || "null");
     if (p) {
@@ -783,6 +808,29 @@ async function exportBackup() {
   const backupBlob = new Blob([magicBytes, lenBuf, headerBytes, ...parts], { type: "application/octet-stream" });
   const filename = `kasette-backup-${new Date().toISOString().slice(0, 10)}.kasette`;
 
+  // In the Android app, showSaveFilePicker doesn't exist (it's a WebView, not
+  // a browser), so route through the SAF export plugin instead: write the
+  // backup into the app's own cache dir first (the only place @capacitor/
+  // filesystem can reach), then hand that path to the native "Save As"
+  // picker, which can target a folder, an SD card, or a USB drive.
+  const CapFS = window.Capacitor?.Plugins?.Filesystem;
+  const CapSaf = window.Capacitor?.Plugins?.SafExport;
+  if (window.Capacitor?.isNativePlatform?.() && CapFS && CapSaf) {
+    try {
+      const base64 = await blobToBase64(backupBlob);
+      await CapFS.writeFile({ path: filename, data: base64, directory: "CACHE" });
+      const { uri } = await CapFS.getUri({ path: filename, directory: "CACHE" });
+      const cachePath = uri.startsWith("file://") ? uri.slice(7) : uri;
+      await CapSaf.exportFile({ path: cachePath, mimeType: "application/octet-stream", suggestedName: filename });
+      toast(i18n("backupSaved"));
+    } catch (e) {
+      if (!(e && String(e.message || e).includes("cancelled"))) console.warn("SafExport:", e);
+    } finally {
+      CapFS.deleteFile({ path: filename, directory: "CACHE" }).catch(() => {});
+    }
+    return;
+  }
+
   // File System Access API opens the native "Save As" dialog, letting the
   // user pick any destination a document provider exposes — a USB-C drive
   // included. Falls back to a plain download where it isn't supported.
@@ -1071,6 +1119,11 @@ function viewSettings() {
   const est = window.__est || { usage: 0, quota: 0 };
   const mb = (b) => (b / 1048576).toFixed(b > 1073741824 ? 0 : 1);
   let html = `<h1 class="h-greet">${i18n("settingsHeading")}</h1>`;
+
+  html += `<div class="set-grp"><p class="sub">${i18n("language")}</p><div class="chips">
+    <button class="chip ${LOCALE === "en" ? "on" : ""}" data-act="lang" data-l="en">${i18n("languageEn")}</button>
+    <button class="chip ${LOCALE === "es" ? "on" : ""}" data-act="lang" data-l="es">${i18n("languageEs")}</button>
+  </div></div>`;
 
   html += `<div class="set-grp"><p class="sub">${i18n("theme")}</p><div class="chips">
     <button class="chip ${settings.mode === "light" ? "on" : ""}" data-act="mode" data-m="light">${i18n("light")}</button>
@@ -1624,6 +1677,17 @@ document.addEventListener("click", (e) => {
       applyTheme();
       render();
       break;
+    case "lang": {
+      settings.locale = el.dataset.l;
+      saveSet();
+      LOCALE = settings.locale;
+      document.documentElement.lang = LOCALE;
+      const _imp = lib.playlists.find((p) => p.id === SYS);
+      if (_imp) _imp.name = i18n("importedSongsPlaylist");
+      saveLib();
+      render();
+      break;
+    }
     case "export-backup":
       exportBackup();
       break;

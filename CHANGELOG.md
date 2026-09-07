@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-09-07
+
+### Added
+
+- Language chips in Settings (English / Español), overriding the
+  device-language auto-detection from any screen without needing to change
+  the phone's system language.
+- On Android, exporting a library backup now opens the system "Save As"
+  picker, so the destination can be any folder on the phone, an SD card, or
+  a USB drive, matching what was already possible on desktop browsers via
+  the File System Access API.
+
 ## [1.2.2] - 2026-09-06
 
 ### Fixed
