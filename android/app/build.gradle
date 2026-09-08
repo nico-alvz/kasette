@@ -7,8 +7,8 @@ android {
         applicationId "com.kasette.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "1.3.0"
+        versionCode 10
+        versionName "1.3.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -36,6 +36,13 @@ android {
                 signingConfig signingConfigs.release
             }
         }
+    }
+    // AGP embeds a "Dependency metadata" block in the APK signature by
+    // default (Google Play's dependency-transparency feature). F-Droid's
+    // scanner flags any extra signing block as a problem, so it's off here.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 

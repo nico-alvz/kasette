@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.1] - 2026-09-08
+
+### Fixed
+
+- Disabled Android Gradle Plugin's "dependency metadata" signing block
+  (`dependenciesInfo`), a Google Play-specific feature that F-Droid's build
+  verifier flags as an unexpected extra signing block.
+
 ## [1.3.0] - 2026-09-07
 
 ### Added
