@@ -1,0 +1,22 @@
+Kasette es un reproductor de música 100% local. Importa archivos de audio
+desde tu dispositivo, y todo lo demás ocurre localmente: sin cuentas, sin
+servidores, sin analítica, sin acceso a internet.
+
+Funciones:
+
+* Importa archivos de audio locales (MP3, FLAC, M4A, OGG, Opus, WAV, AAC)
+* Lectura de etiquetas ID3/FLAC y carátulas incrustadas, sin dependencias
+* Listas de reproducción, incluida una lista automática de "Canciones
+  importadas"
+* Reproducción en segundo plano con controles en la pantalla de bloqueo
+* Búsqueda por título, artista o álbum
+* Temas claro y oscuro, con opciones de color de acento y fondo
+* Inglés y español (neutro), elegible desde Ajustes
+* Exporta o restaura toda tu biblioteca como un solo archivo de respaldo, a
+  cualquier carpeta, una tarjeta SD o una unidad USB
+* Se puede instalar como Progressive Web App, y también está disponible
+  como esta versión nativa para Android
+
+Kasette no está afiliado a Spotify ni a ningún servicio de streaming. No hay
+cuentas, no hay sincronización en la nube, y nada sale nunca de tu
+dispositivo.

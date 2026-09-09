@@ -1,0 +1,20 @@
+Kasette is a 100% offline, client-side music player. Import audio files from
+your device, and everything else happens locally: no accounts, no servers,
+no analytics, no network access at all.
+
+Features:
+
+* Import local audio files (MP3, FLAC, M4A, OGG, Opus, WAV, AAC)
+* Client-side ID3/FLAC tag and embedded cover art parsing
+* Playlists, including an automatic "Imported songs" playlist
+* Background playback with lock-screen/notification controls
+* Search across title, artist, and album
+* Light and dark themes, with accent color and background options
+* English and Spanish (Latin American), switchable in Settings
+* Export or restore your whole library as a single backup file, to any
+  folder, an SD card, or a USB drive
+* Installable as a Progressive Web App, and available as this native
+  Android build
+
+Kasette is not affiliated with Spotify or any streaming service. There are
+no accounts, no cloud sync, and nothing ever leaves your device.

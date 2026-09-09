@@ -1,0 +1,2 @@
+- Fixed the Android back button closing the whole app instead of navigating
+  within it (closing the player, a modal, or going back a screen).

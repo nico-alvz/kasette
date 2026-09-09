@@ -1,0 +1,2 @@
+- Disabled an Android build block that isn't relevant outside Google Play
+  (dependency metadata), to keep the reproducible-build signature clean.

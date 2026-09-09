@@ -1,0 +1,4 @@
+- Added language chips in Settings (English / Español), overriding the
+  device-language auto-detection.
+- Exporting a library backup now opens the system "Save As" picker, so the
+  destination can be any folder, an SD card, or a USB drive.
