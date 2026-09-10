@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.2] - 2026-09-10
+
+### Removed
+
+- The `android.permission.INTERNET` permission. Kasette makes no network
+  requests; the line was only present because Capacitor's Android scaffold
+  adds it by default.
+
 ## [1.3.1] - 2026-09-08
 
 ### Fixed

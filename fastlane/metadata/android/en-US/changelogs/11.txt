@@ -1,0 +1,2 @@
+- Removed the INTERNET permission. Kasette makes no network requests; the
+  line was only there because Capacitor's Android scaffold adds it by default.
