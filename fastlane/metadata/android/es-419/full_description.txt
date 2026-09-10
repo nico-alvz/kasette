@@ -17,6 +17,5 @@ Funciones:
 * Se puede instalar como Progressive Web App, y también está disponible
   como esta versión nativa para Android
 
-Kasette no está afiliado a Spotify ni a ningún servicio de streaming. No hay
-cuentas, no hay sincronización en la nube, y nada sale nunca de tu
+No hay cuentas, no hay sincronización en la nube, y nada sale nunca de tu
 dispositivo.

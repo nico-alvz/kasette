@@ -6,6 +6,7 @@ A 100% offline, client-side music player PWA.
 [![Deploy to GitHub Pages](https://github.com/nico-alvz/kasette/actions/workflows/pages.yml/badge.svg)](https://github.com/nico-alvz/kasette/actions/workflows/pages.yml)
 [![Latest release](https://img.shields.io/github/v/release/nico-alvz/kasette)](https://github.com/nico-alvz/kasette/releases)
 [![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](./LICENSE)
+[![Star this repo](https://img.shields.io/github/stars/nico-alvz/kasette?style=social)](https://github.com/nico-alvz/kasette)
 
 Kasette plays the music files already on your device. Import them once and
 everything else (tags, cover art, playlists, playback) happens locally, with
