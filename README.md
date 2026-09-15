@@ -6,7 +6,6 @@ A 100% offline, client-side music player PWA.
 [![Deploy to GitHub Pages](https://github.com/nico-alvz/kasette/actions/workflows/pages.yml/badge.svg)](https://github.com/nico-alvz/kasette/actions/workflows/pages.yml)
 [![Latest release](https://img.shields.io/github/v/release/nico-alvz/kasette)](https://github.com/nico-alvz/kasette/releases)
 [![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](./LICENSE)
-[![F-Droid](https://img.shields.io/f-droid/v/com.kasette.app)](https://f-droid.org/packages/com.kasette.app/)
 [![Star this repo](https://img.shields.io/github/stars/nico-alvz/kasette?style=social)](https://github.com/nico-alvz/kasette)
 
 Kasette plays the music files already on your device. Import them once and
@@ -39,9 +38,10 @@ in the address bar or the browser menu.
 
 ## Download the Android app
 
-Kasette is on [F-Droid](https://f-droid.org/packages/com.kasette.app/), or you
-can grab the APK straight from [Releases](https://github.com/nico-alvz/kasette/releases).
-Since Kasette isn't distributed through the Play Store, installing the APK
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/com.kasette.app/)
+
+You can also grab the APK straight from [Releases](https://github.com/nico-alvz/kasette/releases).
+Since Kasette isn't distributed through the Play Store, installing that APK
 directly requires enabling "install from unknown sources" for your browser or
 file manager.
 
