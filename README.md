@@ -9,14 +9,8 @@ A 100% offline, client-side music player PWA.
 [![Star this repo](https://img.shields.io/github/stars/nico-alvz/kasette?style=social)](https://github.com/nico-alvz/kasette)
 
 Kasette plays the music files already on your device. Import them once and
-everything else (tags, cover art, playlists, playback) happens locally, with
-no backend involved.
-
-## Privacy
-
-Kasette is 100% local. No accounts, no servers, no analytics, no network
-requests. Your music never leaves your device. It only plays audio files you
-already own, imported from your device.
+everything else (tags, cover art, playlists, playback) happens locally: no
+accounts, no servers, no analytics, no network requests, ever.
 
 ## Features
 
@@ -26,7 +20,7 @@ already own, imported from your device.
 - Light theme by default, with a dark mode and multiple accent colors
 - Export your whole library (songs, art, playlists) to a single backup file, and restore it later. You can pick a USB-C drive as the destination if your browser offers it
 - Background playback via the Media Session API, with lock screen and notification controls
-- English and Latin American Spanish, matching your device's language
+- English and Latin American Spanish
 - Offline-first PWA, installable on desktop and mobile
 - Android app via Capacitor
 
@@ -60,17 +54,6 @@ npx cap add android
 npm run cap:sync
 npm run cap:android   # opens the project in Android Studio
 ```
-
-## Deploy to Cloudflare Pages (optional)
-
-The live site is GitHub Pages, but `www/` can also be deployed to Cloudflare
-Pages with [Wrangler](https://developers.cloudflare.com/workers/wrangler/):
-
-```bash
-npm run deploy:cloudflare
-```
-
-See [docs/cloudflare-pages.md](./docs/cloudflare-pages.md) for setup and details.
 
 ## Tech stack
 
